@@ -44,7 +44,6 @@ jobs:
       - name: Set up environment
         run: |
           choco install make
-          choco install msbuild
 
       - name: Download libogg
         run: |
