@@ -21,8 +21,16 @@ jobs:
 
     - name: Create Zip Archive
       run: |
-        $rootPath = Get-Location
-        Compress-Archive -Path "$rootPath\*" -DestinationPath "$rootPath\RSDKv5-Decompilation-Dependencies.zip" -Force
+        $zipPath = "$(Get-Location)\RSDKv5-Decompilation-Dependencies.zip"
+        $items = Get-ChildItem -Path . -Recurse
+        $compressionResults = @()
+        foreach ($item in $items) {
+            $relativePath = $item.FullName.Substring((Get-Location).FullName.Length + 1)
+            $compressionResults += Compress-Archive -Path $relativePath -DestinationPath $zipPath -Update
+        }
+        if ($compressionResults.Count -eq 0) {
+            Write-Error "No files were added to the zip archive."
+        }
       shell: pwsh
 
     - name: Upload artifact
