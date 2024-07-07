@@ -1,0 +1,26 @@
+name: Run Batch File and Upload Artifact
+
+on:
+  workflow_dispatch:
+
+jobs:
+  run-batch-and-upload:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4.1.7
+      with:
+        submodules: true
+        fetch-depth: 0
+
+    - name: Run dependencies.bat
+      run: |
+        ./dependencies.bat
+      shell: cmd
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4.3.4
+      with:
+        name: RSDKv5-Decompilation-Dependencies
+        path: .
