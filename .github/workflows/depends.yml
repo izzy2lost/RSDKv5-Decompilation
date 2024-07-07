@@ -19,32 +19,14 @@ jobs:
         ./dependencies.bat
       shell: cmd
 
-    - name: Upload artifact - part 1
-      uses: actions/upload-artifact@v4.3.4
-      with:
-        name: RSDKv5-Decompilation-Dependencies-Part1
-        path: |
-          ./vcpkg
-          ./some-other-directory
-        retention-days: 5
+    - name: Create Zip Archive
+      run: |
+        Compress-Archive -Path * -DestinationPath RSDKv5-Decompilation-Dependencies.zip
+      shell: pwsh
 
-    - name: Upload artifact - part 2
+    - name: Upload artifact
       uses: actions/upload-artifact@v4.3.4
       with:
-        name: RSDKv5-Decompilation-Dependencies-Part2
-        path: |
-          ./another-directory
-          ./yet-another-directory
-        retention-days: 5
-
-    - name: Upload artifact - remaining files
-      uses: actions/upload-artifact@v4.3.4
-      with:
-        name: RSDKv5-Decompilation-Dependencies-Remaining
-        path: |
-          ./
-          !./vcpkg
-          !./some-other-directory
-          !./another-directory
-          !./yet-another-directory
+        name: RSDKv5-Decompilation-Dependencies
+        path: RSDKv5-Decompilation-Dependencies.zip
         retention-days: 5
