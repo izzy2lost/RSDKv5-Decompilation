@@ -18,10 +18,18 @@ jobs:
         ./dependencies.bat
       shell: cmd
 
-    - name: Create Zip Archive
+    - name: Create Zip Archive in Chunks
       run: |
         $zipPath = "$(Get-Location)\RSDKv5-Decompilation-Dependencies.zip"
-        Compress-Archive -Path . -DestinationPath $zipPath -Force
+        $chunkSize = 1000
+        $items = Get-ChildItem -Path . -Recurse
+        $chunks = @()
+        for ($i = 0; $i -lt $items.Count; $i += $chunkSize) {
+            $chunks += ,@( $items[$i..([math]::Min($i + $chunkSize - 1, $items.Count - 1))] )
+        }
+        foreach ($chunk in $chunks) {
+            Compress-Archive -Path $chunk.FullName -DestinationPath $zipPath -Update
+        }
       shell: pwsh
 
     - name: Upload artifact
