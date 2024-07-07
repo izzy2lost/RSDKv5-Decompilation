@@ -48,10 +48,15 @@ jobs:
       - name: Build libogg
         run: |
           cd dependencies/windows/libogg
-          mkdir build
-          cd build
-          cmake ..
-          cmake --build . --config Release
+          if (Test-Path "CheckSizes.cmake" -and Test-Path "cmake/OggConfig.cmake.in") {
+              mkdir build
+              cd build
+              cmake ..
+              cmake --build . --config Release
+          } else {
+              Write-Error "Required CMake files are missing."
+              exit 1
+          }
         shell: powershell
 
       - name: Build libtheora
