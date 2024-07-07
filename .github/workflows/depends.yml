@@ -8,11 +8,10 @@ jobs:
     runs-on: windows-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4.1.7
-      with:
-        submodules: true
-        fetch-depth: 0
+    - name: Download dependencies.bat
+      run: |
+        Invoke-WebRequest -Uri "https://raw.githubusercontent.com/izzy2lost/RSDKv5-Decompilation/uwp/dependencies.bat" -OutFile "dependencies.bat"
+      shell: pwsh
 
     - name: Run dependencies.bat
       run: |
@@ -22,15 +21,7 @@ jobs:
     - name: Create Zip Archive
       run: |
         $zipPath = "$(Get-Location)\RSDKv5-Decompilation-Dependencies.zip"
-        $items = Get-ChildItem -Path . -Recurse
-        $compressionResults = @()
-        foreach ($item in $items) {
-            $relativePath = $item.FullName.Substring((Get-Location).FullName.Length + 1)
-            $compressionResults += Compress-Archive -Path $relativePath -DestinationPath $zipPath -Update
-        }
-        if ($compressionResults.Count -eq 0) {
-            Write-Error "No files were added to the zip archive."
-        }
+        Compress-Archive -Path . -DestinationPath $zipPath -Force
       shell: pwsh
 
     - name: Upload artifact
