@@ -21,7 +21,8 @@ jobs:
 
     - name: Create Zip Archive
       run: |
-        Compress-Archive -Path * -DestinationPath RSDKv5-Decompilation-Dependencies.zip
+        $rootPath = Get-Location
+        Compress-Archive -Path "$rootPath\*" -DestinationPath "$rootPath\RSDKv5-Decompilation-Dependencies.zip" -Force
       shell: pwsh
 
     - name: Upload artifact
