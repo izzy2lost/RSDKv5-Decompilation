@@ -19,8 +19,32 @@ jobs:
         ./dependencies.bat
       shell: cmd
 
-    - name: Upload artifact
+    - name: Upload artifact - part 1
       uses: actions/upload-artifact@v4.3.4
       with:
-        name: RSDKv5-Decompilation-Dependencies
-        path: .
+        name: RSDKv5-Decompilation-Dependencies-Part1
+        path: |
+          ./vcpkg
+          ./some-other-directory
+        retention-days: 5
+
+    - name: Upload artifact - part 2
+      uses: actions/upload-artifact@v4.3.4
+      with:
+        name: RSDKv5-Decompilation-Dependencies-Part2
+        path: |
+          ./another-directory
+          ./yet-another-directory
+        retention-days: 5
+
+    - name: Upload artifact - remaining files
+      uses: actions/upload-artifact@v4.3.4
+      with:
+        name: RSDKv5-Decompilation-Dependencies-Remaining
+        path: |
+          ./
+          !./vcpkg
+          !./some-other-directory
+          !./another-directory
+          !./yet-another-directory
+        retention-days: 5
