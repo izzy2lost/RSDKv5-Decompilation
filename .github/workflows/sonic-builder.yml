@@ -23,7 +23,7 @@ jobs:
       Configuration: Release
       BuildMode: SideLoadOnly
       AppxBundle: Never
-      ProjectPath: RSDKv5/RSDKv5.UWP.vcxproj
+      ProjectPath: RSDKv5/RSDKv5_dx11.vcxproj
       ProjectDirectory: .\RSDKv5
       PackageOutputRootDir: C:\AppPackage
       PackageOutputDir: RSDKv5
@@ -69,7 +69,7 @@ jobs:
           INCLUDE: C:\vcpkg\installed\x64-windows-static-md\include;${{ env.INCLUDE }}
           LIB: C:\vcpkg\installed\x64-windows-static-md\lib;${{ env.LIB }}
         run: |
-          msbuild $env:SolutionPath /m `
+          msbuild $env:ProjectPath /m `
             /p:PlatformToolset=v143 `
             /p:Platform=$env:Platform `
             /p:Configuration=$env:Configuration `
