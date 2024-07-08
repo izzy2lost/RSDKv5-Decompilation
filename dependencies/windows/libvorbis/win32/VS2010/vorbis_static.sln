@@ -1,7 +1,6 @@
-Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 17
-VisualStudioVersion = 17.0.31912.275
-MinimumVisualStudioVersion = 10.0.40219.1
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libvorbisfile", "libvorbisfile\libvorbisfile_static.vcxproj", "{CEBDE98B-A6AA-46E6-BC79-FAAF823DB9EC}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libvorbis_static", "libvorbis\libvorbis_static.vcxproj", "{3A214E06-B95E-4D61-A291-1F8DF2EC10FD}"
