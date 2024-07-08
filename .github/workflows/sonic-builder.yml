@@ -132,4 +132,4 @@ jobs:
         uses: actions/upload-artifact@v4.3.4
         with:
           name: ${{ github.event.inputs.package_name }} Build
-          path: ${{ env.PackageOutputRoot
+          path: ${{ env.PackageOutputRootDir }}\${{ env.PACKAGE_NAME }}.zip
