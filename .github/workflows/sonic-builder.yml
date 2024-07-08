@@ -22,7 +22,7 @@ jobs:
       Platform: x64
       Configuration: Release
       BuildMode: SideLoadOnly
-      AppxBundle: Never
+      AppxBundle: Always
       ProjectPath: RSDKv5/RSDKv5.UWP.vcxproj
       ProjectDirectory: .\RSDKv5
       PackageOutputRootDir: C:\AppPackage
