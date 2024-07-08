@@ -6,7 +6,7 @@
     <CppWinRTRootNamespaceAutoMerge>true</CppWinRTRootNamespaceAutoMerge>
     <MinimalCoreWin>true</MinimalCoreWin>
     <ProjectGuid>{5ecc2adb-a0f6-48c0-9861-0f2c5f9f244b}</ProjectGuid>
-    <ProjectName>RSDKv5.UWP</ProjectName>
+    <ProjectName>RSDKv5-UWP</ProjectName>
     <RootNamespace>RSDKv5_UWP</RootNamespace>
     <DefaultLanguage>en-US</DefaultLanguage>
     <MinimumVisualStudioVersion>15.0</MinimumVisualStudioVersion>
