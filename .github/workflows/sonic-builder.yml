@@ -37,9 +37,6 @@ jobs:
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v2
 
-      - name: Setup NuGet
-        uses: NuGet/setup-nuget@v1
-
       - name: Download libogg and libtheora for easier includes
         run: |
           Invoke-WebRequest -Uri "https://ftp.osuosl.org/pub/xiph/releases/ogg/libogg-1.3.5.zip" -OutFile "libogg.zip"
@@ -72,7 +69,8 @@ jobs:
           INCLUDE: C:\vcpkg\installed\x64-windows-static-md\include;${{ env.INCLUDE }}
           LIB: C:\vcpkg\installed\x64-windows-static-md\lib;${{ env.LIB }}
         run: |
-          msbuild $env:SolutionPath `
+          msbuild $env:SolutionPath /m `
+            /p:PlatformToolset=v143 `
             /p:Platform=$env:Platform `
             /p:Configuration=$env:Configuration `
             /p:UapAppxPackageBuildMode=$env:BuildMode `
@@ -80,7 +78,8 @@ jobs:
             /p:PackageCertificateThumbprint="${{ env.THUMBPRINT }}" `
             /p:AppxPackageTestDir="${{ env.PackageOutputRootDir }}\${{ env.PACKAGE_NAME }}" `
             /p:ForceImportBeforeCppTargets="$env:GITHUB_WORKSPACE/props/winactions_x64.props" `
-            /t:RSDKv5-UWP `
+            /t:restore,build `
+            /p:RestorePackagesConfig=true `
             /restore
         shell: pwsh
 
