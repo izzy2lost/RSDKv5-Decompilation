@@ -41,34 +41,14 @@ jobs:
           submodules: true
           fetch-depth: 0
 
-      - name: Set up environment
-        run: |
-          choco install make
-          choco install mingw
-          choco install msys2
-          RefreshEnv
-          ridk install 2 3
-
       - name: Build libogg
         run: |
-          cd dependencies/windows/libogg
-          ./configure --disable-shared --enable-static
-          make
-          mkdir -p ../../libogg_build/include
-          mkdir -p ../../libogg_build/lib
-          cp -r include/ogg ../../libogg_build/include/
-          cp src/.libs/*.a ../../libogg_build/lib/
-        shell: bash
+          msbuild "dependencies/windows/libogg/win32/VS2015/libogg.sln" /t:libogg /p:Configuration=Release
+        shell: pwsh
 
-      - name: Retarget and Build libtheora
+      - name: Build libtheora
         run: |
-          cd dependencies/windows/libtheora/win32/VS2010
-          $solution = "libtheora_static.sln"
-          $toolset = "v143"
-          $liboggIncludePath = "D:/a/RSDKv5-Decompilation/RSDKv5-Decompilation/dependencies/libogg_build/include"
-          $liboggLibPath = "D:/a/RSDKv5-Decompilation/RSDKv5-Decompilation/dependencies/libogg_build/lib"
-          Write-Host "Retargeting solution $solution to use toolset $toolset"
-          & "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\MSBuild\Current\Bin\MSBuild.exe" $solution /p:PlatformToolset=$toolset /p:IncludePath="$liboggIncludePath" /p:LibraryPath="$liboggLibPath" /t:Clean,Build /p:Configuration=Release
+          msbuild "dependencies/windows/libtheora/win32/VS2010/libtheora_static.sln" /t:libtheora_static /p:Configuration=Release
         shell: pwsh
 
       - name: Generate Self-Signed Certificate
