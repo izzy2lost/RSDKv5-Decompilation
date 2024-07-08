@@ -1,0 +1,143 @@
+
+name: Sonic Mania Builder
+
+# Controls when the workflow will run
+on:
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: 'Tag Name'
+        required: true
+        default: 'v1.0.0'
+      package_name:
+        description: 'Package Name'
+        required: true
+        default: 'RSDKv5'
+
+jobs:
+  build:
+    runs-on: windows-2022
+
+    env:
+      SolutionPath: RSDKv5.sln
+      Platform: x64
+      Configuration: Release
+      BuildMode: SideLoadOnly
+      AppxBundle: Never
+      ProjectPath: RSDKv5/RSDKv5.UWP.vcxproj
+      ProjectDirectory: .\RSDKv5
+      PackageOutputRootDir: C:\AppPackage
+      PackageOutputDir: RSDKv5
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v1
+        with:
+          submodules: recursive
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Download libogg and libtheora for easier includes
+        run: |
+          Invoke-WebRequest -Uri "https://ftp.osuosl.org/pub/xiph/releases/ogg/libogg-1.3.5.zip" -OutFile "libogg.zip"
+          Expand-Archive -Path libogg.zip -DestinationPath ./dependencies/windows/
+          Rename-Item ./dependencies/windows/libogg-1.3.5 libogg
+          Invoke-WebRequest -Uri "https://ftp.osuosl.org/pub/xiph/releases/theora/libtheora-1.2.0alpha1.zip" -OutFile "libtheora.zip"
+          Expand-Archive -Path libtheora.zip -DestinationPath ./dependencies/windows/
+          Rename-Item ./dependencies/windows/libtheora-1.2.0alpha1 libtheora
+          
+      - name: Download GLEW
+        run: |
+          Invoke-WebRequest -Uri "https://github.com/nigels-com/glew/releases/download/glew-2.2.0/glew-2.2.0-win32.zip" -OutFile "GLEW.zip"
+          Expand-Archive -Path GLEW.zip -DestinationPath ./dependencies/windows/
+          Rename-Item ./dependencies/windows/glew-2.2.0 glew
+          
+      - name: Download SDL2
+        run: |
+          Invoke-WebRequest -Uri "https://libsdl.org/release/SDL2-devel-2.28.5-VC.zip" -OutFile "SDL2.zip"
+          Expand-Archive -Path SDL2.zip -DestinationPath ./dependencies/windows/
+          Rename-Item ./dependencies/windows/SDL2-2.28.5 SDL2
+          
+      - name: Download Game.dll from Google Drive
+        run: |
+          Invoke-WebRequest -Uri "https://drive.google.com/uc?export=download&id=1SZ-T1hrD9mYmnVNq8kxThS2RU1gCm-Sb" -OutFile "Game.dll"
+          New-Item -ItemType Directory -Force -Path "D:\a\RSDKv5-Decompilation\Sonic-Mania-Decompilation\build\x64\Release\Game"
+          Move-Item -Path "Game.dll" -Destination "D:\a\RSDKv5-Decompilation\Sonic-Mania-Decompilation\build\x64\Release\Game\Game.dll"
+        shell: pwsh
+
+      - name: Download ManiaTouchControls.dll from Google Drive
+        run: |
+          Invoke-WebRequest -Uri "https://drive.google.com/uc?export=download&id=1Sh-qQXAoYwEMKotbjSMRv7JmPuDVHIgp" -OutFile "ManiaTouchControls.dll"
+          New-Item -ItemType Directory -Force -Path "D:\a\RSDKv5-Decompilation\RSDKv5-Example-Mods\ManiaTouchControls\build\x64\Release"
+          Move-Item -Path "ManiaTouchControls.dll" -Destination "D:\a\RSDKv5-Decompilation\RSDKv5-Example-Mods\ManiaTouchControls\build\x64\Release\ManiaTouchControls.dll"
+        shell: pwsh
+
+      - name: Run vcpkg
+        run: |
+          vcpkg install glew sdl2 libogg:x64-windows-static-md libtheora:x64-windows-static-md
+          vcpkg integrate install
+          
+      - name: Generate Self-Signed Certificate
+        id: generate_cert
+        run: |
+          $cert = New-SelfSignedCertificate -CertStoreLocation "Cert:\CurrentUser\My" -Subject "CN=MyUWPCert" -KeyAlgorithm RSA -KeyLength 2048 -Provider "Microsoft Enhanced RSA and AES Cryptographic Provider" -KeyExportPolicy Exportable -NotAfter (Get-Date).AddYears(1) -Type CodeSigningCert
+          echo "THUMBPRINT=$($cert.Thumbprint)" >> $env:GITHUB_ENV
+        shell: pwsh
+
+      - name: Set Package Name
+        id: set_package_name
+        run: |
+          echo "PACKAGE_NAME=${{ github.event.inputs.package_name }}_${{ github.event.inputs.tag_name }}" >> $GITHUB_ENV
+          
+      - name: App Build
+        run: |
+          msbuild $env:SolutionPath -target:RSDKv5-UWP `
+            /p:Platform=$env:Platform `
+            /p:Configuration=$env:Configuration `
+            /p:UapAppxPackageBuildMode=$env:BuildMode `
+            /p:AppxBundle=$env:AppxBundle `
+            /p:PackageCertificateThumbprint="${{ env.THUMBPRINT }}" `
+            /p:AppxPackageTestDir="${{ env.PackageOutputRootDir }}\${{ env.PACKAGE_NAME }}" `
+            /p:ForceImportBeforeCppTargets="$env:GITHUB_WORKSPACE/props/winactions_x64.props" `
+            /restore
+        shell: pwsh
+
+      - name: Clean the Package
+        run: |
+          $PackagePath = "${{ env.PackageOutputRootDir }}\${{ env.PACKAGE_NAME }}"
+          if (Test-Path $PackagePath) {
+            Write-Host "Cleaning package directory: $PackagePath"
+            Remove-Item -Recurse -path "$PackagePath\Add-AppDevPackage.resources" -ErrorAction SilentlyContinue
+            Remove-Item -Recurse -path "$PackagePath\TelemetryDependencies" -ErrorAction SilentlyContinue
+            Remove-Item -Recurse -path "$PackagePath\Dependencies\arm" -ErrorAction SilentlyContinue
+            Remove-Item -Recurse -path "$PackagePath\Dependencies\arm64" -ErrorAction SilentlyContinue
+            Remove-Item -Recurse -path "$PackagePath\Dependencies\x86" -ErrorAction SilentlyContinue
+            Remove-Item -Recurse -path "$PackagePath\Dependencies\Win32" -ErrorAction SilentlyContinue
+            Remove-Item -path "$PackagePath\Add-AppDevPackage.ps1" -ErrorAction SilentlyContinue
+            Remove-Item -Recurse -path "$PackagePath\Install.ps1" -ErrorAction SilentlyContinue
+          } else {
+            Write-Host "Package path does not exist: $PackagePath"
+            exit 1
+          }
+        shell: pwsh
+
+      - name: Create Archive
+        run: |
+          $PackagePath = "${{ env.PackageOutputRootDir }}\${{ env.PACKAGE_NAME }}"
+          if (Test-Path $PackagePath) {
+            Write-Host "Creating archive for: $PackagePath"
+            Compress-Archive -Path "$PackagePath\*" -DestinationPath "${{ env.PackageOutputRootDir }}\${{ env.PACKAGE_NAME }}.zip"
+            Write-Host "Contents of package output directory after archiving:"
+            Get-ChildItem -Path "${{ env.PackageOutputRootDir }}" -Recurse
+          } else {
+            Write-Host "Package path does not exist for archiving: $PackagePath"
+            exit 1
+          }
+        shell: pwsh
+
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v4.3.4
+        with:
+          name: ${{ github.event.inputs.package_name }} Build
+          path: ${{ env.PackageOutputRootDir }}\${{ env.PACKAGE_NAME }}.zip
