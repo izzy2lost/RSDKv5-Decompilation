@@ -62,7 +62,12 @@ jobs:
           Expand-Archive -Path libtheora.zip -DestinationPath ./dependencies/windows/
           Rename-Item ./dependencies/windows/libtheora-1.2.0alpha1 libtheora
           cd ./dependencies/windows/libtheora/win32/VS2010
-          msbuild libtheora_static.sln /p:PlatformToolset=v143 /p:WindowsTargetPlatformVersion=10.0.19041.0 /p:Configuration=Release /p:Platform=x64 /p:AdditionalIncludeDirectories=$(ProjectDir)..\..\..\libogg\include;$(ProjectDir)..\..\..\libvorbis\include /p:AdditionalLibraryDirectories=$(ProjectDir)..\..\..\libogg\win32\VS2015\$(Configuration)\$(Platform)
+          msbuild libtheora_static.sln /p:PlatformToolset=v143 `
+            /p:WindowsTargetPlatformVersion=10.0.19041.0 `
+            /p:Configuration=Release `
+            /p:Platform=x64 `
+            /p:AdditionalIncludeDirectories="$(Resolve-Path ..\..\..\libogg\include);$(Resolve-Path ..\..\..\libvorbis\include)" `
+            /p:AdditionalLibraryDirectories="$(Resolve-Path ..\..\..\libogg\win32\VS2015\$env:Configuration\$env:Platform)"
 
       - name: Download Game.dll from Google Drive
         run: |
@@ -122,3 +127,23 @@ jobs:
             exit 1
           }
         shell: pwsh
+
+      - name: Create Archive
+        run: |
+          $PackagePath = "${{ env.PackageOutputRootDir }}\${{ env.PACKAGE_NAME }}"
+          if (Test-Path $PackagePath) {
+            Write-Host "Creating archive for: $PackagePath"
+            Compress-Archive -Path "$PackagePath\*" -DestinationPath "${{ env.PackageOutputRootDir }}\${{ env.PACKAGE_NAME }}.zip"
+            Write-Host "Contents of package output directory after archiving:"
+            Get-ChildItem -Path "${{ env.PackageOutputRootDir }}" -Recurse
+          } else {
+            Write-Host "Package path does not exist for archiving: $PackagePath"
+            exit 1
+          }
+        shell: pwsh
+
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v4.3.4
+        with:
+          name: ${{ github.event.inputs.package_name }} Build
+          path: ${{ env.PackageOutputRootDir }}\${{ env.PACKAGE_NAME }}.zip
