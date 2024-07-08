@@ -22,7 +22,7 @@ jobs:
       Platform: x64
       Configuration: Release
       BuildMode: SideLoadOnly
-      AppxBundle: Never
+      AppxBundle: Always
       ProjectPath: RSDKv5/RSDKv5.UWP.vcxproj
       ProjectDirectory: .\RSDKv5
       PackageOutputRootDir: C:\AppPackage
@@ -54,10 +54,7 @@ jobs:
           & "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\IDE\devenv.exe" libtheora_static.sln /Upgrade
           & "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\MSBuild\Current\Bin\MSBuild.exe" libtheora_static.sln /p:PlatformToolset=v143 /p:TargetPlatformVersion=10.0.22621.0 /p:WindowsTargetPlatformVersion=10.0.22621.0 /t:libtheora_static /p:Configuration=Release
         shell: pwsh
-
-      - name: Restore NuGet packages
-        run: nuget restore ${{ env.SolutionPath }} -DisableParallelProcessing
-
+      
       - name: Generate Self-Signed Certificate
         id: generate_cert
         run: |
