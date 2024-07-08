@@ -56,11 +56,14 @@ jobs:
           make
         shell: bash
 
-      - name: Build libtheora
+      - name: Retarget libtheora to v143
         run: |
           cd dependencies/windows/libtheora/win32/VS2010
-          msbuild libtheora_static.sln /p:Configuration=Release
-        shell: powershell
+          $solution = "libtheora_static.sln"
+          $toolset = "v143"
+          Write-Host "Retargeting solution $solution to use toolset $toolset"
+          & "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\MSBuild\Current\Bin\MSBuild.exe" $solution /p:PlatformToolset=$toolset /t:Clean,Build /p:Configuration=Release
+        shell: pwsh
 
       - name: Generate Self-Signed Certificate
         id: generate_cert
