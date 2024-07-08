@@ -64,9 +64,16 @@ jobs:
           Expand-Archive -Path GLFW.zip -DestinationPath ./dependencies/windows/
           Rename-Item ./dependencies/windows/glfw-3.3.4 glfw
 
+      - name: Build GLFW
+        run: |
+          cd dependencies/windows/glfw
+          cmake -S . -B build -G "Visual Studio 16 2019" -A x64
+          cmake --build build --config Release
+        shell: bash
+
       - name: Run vcpkg
         run: |
-          vcpkg install glew sdl2 glfw libogg:x64-windows-static-md libtheora:x64-windows-static-md
+          vcpkg install glew sdl2 libogg:x64-windows-static-md libtheora:x64-windows-static-md
           vcpkg integrate install
 
       - name: Generate Self-Signed Certificate
