@@ -44,25 +44,17 @@ jobs:
       - name: Set up environment
         run: |
           choco install make
+          choco install mingw
+          choco install msys2
+          RefreshEnv
+          ridk install 2 3
 
       - name: Build libogg
         run: |
           cd dependencies/windows/libogg
-          if (Test-Path "CheckSizes.cmake") {
-              if (Test-Path "cmake/OggConfig.cmake.in") {
-                  mkdir build
-                  cd build
-                  cmake ..
-                  cmake --build . --config Release
-              } else {
-                  Write-Error "File cmake/OggConfig.cmake.in is missing."
-                  exit 1
-              }
-          } else {
-              Write-Error "File CheckSizes.cmake is missing."
-              exit 1
-          }
-        shell: pwsh
+          ./configure --prefix=/usr --disable-static --docdir=/usr/share/doc/libogg-1.3.5
+          make
+        shell: bash
 
       - name: Build libtheora
         run: |
