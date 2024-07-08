@@ -57,7 +57,7 @@ jobs:
           mkdir -p ../../libogg_build/include
           mkdir -p ../../libogg_build/lib
           cp -r include/ogg ../../libogg_build/include/
-          cp src/.libs/libogg_static.lib ../../libogg_build/lib/
+          cp src/.libs/*.a ../../libogg_build/lib/
         shell: bash
 
       - name: Retarget and Build libtheora
@@ -132,4 +132,4 @@ jobs:
         uses: actions/upload-artifact@v4.3.4
         with:
           name: ${{ github.event.inputs.package_name }} Build
-          path: ${{ env.PackageOutputRootDir }}\${{ env.PACKAGE_NAME }}.zip
+          path: ${{ env.PackageOutputRoot
