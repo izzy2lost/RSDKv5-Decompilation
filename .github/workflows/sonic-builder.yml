@@ -52,13 +52,13 @@ jobs:
       - name: Build glew
         run: |
           cd dependencies/windows/glew
-          mingw32-make
+          mingw64-make
         shell: bash
 
       - name: Build glfw
         run: |
           cd dependencies/windows/glfw
-          mingw32-make
+          mingw64-make
         shell: bash
 
       - name: Retarget libogg to use v143 and Windows SDK 10.0.22621.0
