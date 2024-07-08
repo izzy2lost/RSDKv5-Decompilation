@@ -23,7 +23,7 @@ jobs:
       Configuration: Release
       BuildMode: SideLoadOnly
       AppxBundle: Never
-      ProjectPath: RSDKv5/RSDKv5_dx11.vcxproj
+      ProjectPath: RSDKv5/RSDKv5.UWP.vcxproj
       ProjectDirectory: .\RSDKv5
       PackageOutputRootDir: C:\AppPackage
       PackageOutputDir: RSDKv5
@@ -63,13 +63,13 @@ jobs:
         run: |
           echo "PACKAGE_NAME=${{ github.event.inputs.package_name }}_${{ github.event.inputs.tag_name }}" >> $GITHUB_ENV
 
-      - name: App Build
+      - name: Build RSDKv5 UWP
         env:
           VCPKG_ROOT: C:\vcpkg
           INCLUDE: C:\vcpkg\installed\x64-windows-static-md\include;${{ env.INCLUDE }}
           LIB: C:\vcpkg\installed\x64-windows-static-md\lib;${{ env.LIB }}
         run: |
-          msbuild $env:ProjectPath /m `
+          msbuild $env:SolutionPath -target:RSDKv5-UWP `
             /p:PlatformToolset=v143 `
             /p:Platform=$env:Platform `
             /p:Configuration=$env:Configuration `
@@ -77,8 +77,7 @@ jobs:
             /p:AppxBundle=$env:AppxBundle `
             /p:PackageCertificateThumbprint="${{ env.THUMBPRINT }}" `
             /p:AppxPackageTestDir="${{ env.PackageOutputRootDir }}\${{ env.PACKAGE_NAME }}" `
-            /t:restore,build `
-            /p:RestorePackagesConfig=true `
+            /p:ForceImportBeforeCppTargets="$env:GITHUB_WORKSPACE/props/winactions_x64.props" `
             /restore
         shell: pwsh
 
