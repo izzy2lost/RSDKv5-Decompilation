@@ -247,6 +247,5 @@ android/local.properties
 *.res
 
 Generated Files/
-Mods/
 BundleArtifacts/
 Assets/
