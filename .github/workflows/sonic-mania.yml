@@ -37,13 +37,23 @@ jobs:
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v2
       
+      - name: Retarget libogg solution to Visual Studio 2022 and toolset v143
+        run: |
+          $solutionPath = "./dependencies/windows/libogg/win32/VS2015/libogg.sln"
+          & "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\IDE\devenv.com" $solutionPath /Upgrade
+
+      - name: Retarget libtheora solution to Visual Studio 2022 and toolset v143
+        run: |
+          $solutionPath = "./dependencies/windows/libtheora/win32/VS2010/libtheora_static.sln"
+          & "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\IDE\devenv.com" $solutionPath /Upgrade
+
       - name: Build libogg
         run: |
-          msbuild ./dependencies/windows/libogg/win32/VS2015/libogg.sln /p:Configuration=Release /p:Platform=x64
-          
+          msbuild ./dependencies/windows/libogg/win32/VS2015/libogg.sln /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v143
+
       - name: Build libtheora
         run: |
-          msbuild ./dependencies/windows/libtheora/win32/VS2010/libtheora_static.sln /p:Configuration=Release /p:Platform=x64
+          msbuild ./dependencies/windows/libtheora/win32/VS2010/libtheora_static.sln /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v143
 
       - name: Download GLEW
         run: |
@@ -120,23 +130,4 @@ jobs:
             exit 1
           }
         shell: pwsh
-
-      - name: Create Archive
-        run: |
-          $PackagePath = "${{ env.PackageOutputRootDir }}\${{ env.PACKAGE_NAME }}"
-          if (Test-Path $PackagePath) {
-            Write-Host "Creating archive for: $PackagePath"
-            Compress-Archive -Path "$PackagePath\*" -DestinationPath "${{ env.PackageOutputRootDir }}\${{ env.PACKAGE_NAME }}.zip"
-            Write-Host "Contents of package output directory after archiving:"
-            Get-ChildItem -Path "${{ env.PackageOutputRootDir }}" -Recurse
-          } else {
-            Write-Host "Package path does not exist for archiving: $PackagePath"
-            exit 1
-          }
-        shell: pwsh
-
-      - name: Upload Build Artifact
-        uses: actions/upload-artifact@v4.3.4
-        with:
-          name: ${{ github.event.inputs.package_name }} Build
-          path: ${{ env.PackageOutputRootDir }}\${{ env.PACKAGE_NAME }}.zip
+        
