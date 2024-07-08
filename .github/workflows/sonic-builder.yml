@@ -90,7 +90,7 @@ jobs:
             /p:AppxPackageTestDir="${{ env.PackageOutputRootDir }}\${{ env.PACKAGE_NAME }}" `
             /p:ForceImportBeforeCppTargets="$env:GITHUB_WORKSPACE/props/winactions_x64.props" `
             /p:AdditionalIncludeDirectories="D:\a\RSDKv5-Decompilation\RSDKv5-Decompilation\dependencies\windows\libtheora\include;D:\a\RSDKv5-Decompilation\RSDKv5-Decompilation\dependencies\windows\libogg\include;D:\a\RSDKv5-Decompilation\RSDKv5-Decompilation\dependencies\windows\SDL2\include" `
-            /p:AdditionalLibraryDirectories="D:\a\RSDKv5-Decompilation\RSDKv5-Decompilation\dependencies\windows\libtheora\win32\VS2010\$(Platform)\Release;D:\a\RSDKv5-Decompilation\RSDKv5-Decompilation\dependencies\windows\libogg\win32\VS2015\$(Platform)\Release;D:\a\RSDKv5-Decompilation\RSDKv5-Decompilation\dependencies\windows\SDL2\lib\$(PlatformTargetAsMSBuildArchitecture)" `
+            /p:AdditionalLibraryDirectories="D:\a\RSDKv5-Decompilation\RSDKv5-Decompilation\dependencies\windows\libtheora\win32\VS2010\%env:Platform%\Release;D:\a\RSDKv5-Decompilation\RSDKv5-Decompilation\dependencies\windows\libogg\win32\VS2015\%env:Platform%\Release;D:\a\RSDKv5-Decompilation\RSDKv5-Decompilation\dependencies\windows\SDL2\lib\%env:PlatformTargetAsMSBuildArchitecture%" `
             /p:RestorePackagesConfig=true `
             /restore
         shell: pwsh
@@ -105,8 +105,10 @@ jobs:
             Remove-Item -Recurse -path "$PackagePath\Dependencies\arm" -ErrorAction SilentlyContinue
             Remove-Item -Recurse -path "$PackagePath\Dependencies\arm64" -ErrorAction SilentlyContinue
             Remove-Item -Recurse -path "$PackagePath\Dependencies\x86" -ErrorAction SilentlyContinue
-            Remove-Item -Recurse -path "$PackagePath\Dependencies\Win32" -ErrorAction
-          else {
+            Remove-Item -Recurse -path "$PackagePath\Dependencies\Win32" -ErrorAction SilentlyContinue
+            Remove-Item -path "$PackagePath\Add-AppDevPackage.ps1" -ErrorAction SilentlyContinue
+            Remove-Item -Recurse -path "$PackagePath\Install.ps1" -ErrorAction SilentlyContinue
+          } else {
             Write-Host "Package path does not exist: $PackagePath"
             exit 1
           }
