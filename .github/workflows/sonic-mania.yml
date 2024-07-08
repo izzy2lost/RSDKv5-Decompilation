@@ -36,17 +36,7 @@ jobs:
 
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v2
-      
-      - name: Retarget libogg solution to Visual Studio 2022 and toolset v143
-        run: |
-          $solutionPath = "./dependencies/windows/libogg/win32/VS2015/libogg.sln"
-          & "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\IDE\devenv.com" $solutionPath /Upgrade
-
-      - name: Retarget libtheora solution to Visual Studio 2022 and toolset v143
-        run: |
-          $solutionPath = "./dependencies/windows/libtheora/win32/VS2010/libtheora_static.sln"
-          & "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\IDE\devenv.com" $solutionPath /Upgrade
-
+            
       - name: Build libogg
         run: |
           msbuild ./dependencies/windows/libogg/win32/VS2015/libogg.sln /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v143
