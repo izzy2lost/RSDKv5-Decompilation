@@ -52,7 +52,7 @@ jobs:
       - name: Build glew
         run: |
           cd dependencies/windows/glew
-          make
+          make GLEW_DEST=mingw GLEW_PREFIX=/usr/x86_64-w64-mingw32
         shell: bash
 
       - name: Build glfw
