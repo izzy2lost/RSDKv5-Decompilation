@@ -54,15 +54,17 @@ jobs:
           cd dependencies/windows/libogg
           ./configure --prefix=/usr --disable-static --docdir=/usr/share/doc/libogg-1.3.5
           make
+          make install
         shell: bash
 
-      - name: Retarget libtheora to v143
+      - name: Retarget and Build libtheora
         run: |
           cd dependencies/windows/libtheora/win32/VS2010
           $solution = "libtheora_static.sln"
           $toolset = "v143"
+          $liboggPath = "D:/a/RSDKv5-Decompilation/RSDKv5-Decompilation/dependencies/windows/libogg"
           Write-Host "Retargeting solution $solution to use toolset $toolset"
-          & "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\MSBuild\Current\Bin\MSBuild.exe" $solution /p:PlatformToolset=$toolset /t:Clean,Build /p:Configuration=Release
+          & "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\MSBuild\Current\Bin\MSBuild.exe" $solution /p:PlatformToolset=$toolset /p:IncludePath="$liboggPath/include" /p:LibraryPath="$liboggPath/lib" /t:Clean,Build /p:Configuration=Release
         shell: pwsh
 
       - name: Generate Self-Signed Certificate
