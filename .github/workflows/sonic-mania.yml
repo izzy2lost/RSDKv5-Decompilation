@@ -36,9 +36,11 @@ jobs:
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v2
 
+      - name: Install wget
+        run: choco install wget -y
+
       - name: Download Visual Studio 2010 Express
-        run: |
-          Invoke-WebRequest -Uri "https://archive.org/download/vs-2010-express-1/VS2010Express1.iso" -OutFile "VS2010Express1.iso"
+        run: wget -O VS2010Express1.iso "https://archive.org/download/vs-2010-express-1/VS2010Express1.iso"
 
       - name: Mount ISO
         run: |
@@ -65,26 +67,26 @@ jobs:
 
       - name: Download GLEW
         run: |
-          Invoke-WebRequest -Uri "https://github.com/nigels-com/glew/releases/download/glew-2.2.0/glew-2.2.0-win32.zip" -OutFile "GLEW.zip"
+          wget -O GLEW.zip "https://github.com/nigels-com/glew/releases/download/glew-2.2.0/glew-2.2.0-win32.zip"
           Expand-Archive -Path GLEW.zip -DestinationPath ./dependencies/windows/
           Rename-Item ./dependencies/windows/glew-2.2.0 glew
           
       - name: Download SDL2
         run: |
-          Invoke-WebRequest -Uri "https://libsdl.org/release/SDL2-devel-2.28.5-VC.zip" -OutFile "SDL2.zip"
+          wget -O SDL2.zip "https://libsdl.org/release/SDL2-devel-2.28.5-VC.zip"
           Expand-Archive -Path SDL2.zip -DestinationPath ./dependencies/windows/
           Rename-Item ./dependencies/windows/SDL2-2.28.5 SDL2
           
       - name: Download Game.dll from Google Drive
         run: |
-          Invoke-WebRequest -Uri "https://drive.google.com/uc?export=download&id=1SZ-T1hrD9mYmnVNq8kxThS2RU1gCm-Sb" -OutFile "Game.dll"
+          wget -O Game.dll "https://drive.google.com/uc?export=download&id=1SZ-T1hrD9mYmnVNq8kxThS2RU1gCm-Sb"
           New-Item -ItemType Directory -Force -Path "D:\a\RSDKv5-Decompilation\Sonic-Mania-Decompilation\build\x64\Release\Game"
           Move-Item -Path "Game.dll" -Destination "D:\a\RSDKv5-Decompilation\Sonic-Mania-Decompilation\build\x64\Release\Game\Game.dll"
         shell: pwsh
 
       - name: Download ManiaTouchControls.dll from Google Drive
         run: |
-          Invoke-WebRequest -Uri "https://drive.google.com/uc?export=download&id=1Sh-qQXAoYwEMKotbjSMRv7JmPuDVHIgp" -OutFile "ManiaTouchControls.dll"
+          wget -O ManiaTouchControls.dll "https://drive.google.com/uc?export=download&id=1Sh-qQXAoYwEMKotbjSMRv7JmPuDVHIgp"
           New-Item -ItemType Directory -Force -Path "D:\a\RSDKv5-Decompilation\RSDKv5-Example-Mods\ManiaTouchControls\build\x64\Release"
           Move-Item -Path "ManiaTouchControls.dll" -Destination "D:\a\RSDKv5-Decompilation\RSDKv5-Example-Mods\ManiaTouchControls\build\x64\Release\ManiaTouchControls.dll"
         shell: pwsh
