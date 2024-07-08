@@ -74,16 +74,7 @@ jobs:
           echo "PACKAGE_NAME=${{ github.event.inputs.package_name }}_${{ github.event.inputs.tag_name }}" >> $GITHUB_ENV
 
       - name: Build RSDKv5 UWP
-        env:
-          VCPKG_ROOT: C:\vcpkg
-          INCLUDE: C:\vcpkg\installed\x64-windows-static-md\include;${{ env.INCLUDE }}
-          LIB: C:\vcpkg\installed\x64-windows-static-md\lib;${{ env.LIB }}
         run: |
-          $Platform = $env:Platform
-          $Configuration = $env:Configuration
-          $IncludeDirs = "D:\a\RSDKv5-Decompilation\RSDKv5-Decompilation\dependencies\windows\libtheora\include;D:\a\RSDKv5-Decompilation\RSDKv5-Decompilation\dependencies\windows\libogg\include;D:\a\RSDKv5-Decompilation\RSDKv5-Decompilation\dependencies\windows\SDL2\include"
-          $LibraryDirs = "D:\a\RSDKv5-Decompilation\RSDKv5-Decompilation\dependencies\windows\libtheora\win32\VS2010\$Platform\Release;D:\a\RSDKv5-Decompilation\RSDKv5-Decompilation\dependencies\windows\libogg\win32\VS2015\$Platform\Release;D:\a\RSDKv5-Decompilation\RSDKv5-Decompilation\dependencies\windows\SDL2\lib\$Platform"
-          
           msbuild $env:SolutionPath -target:RSDKv5-UWP `
             /p:PlatformToolset=v143 `
             /p:Platform=$Platform `
@@ -93,8 +84,6 @@ jobs:
             /p:PackageCertificateThumbprint="${{ env.THUMBPRINT }}" `
             /p:AppxPackageTestDir="${{ env.PackageOutputRootDir }}\${{ env.PACKAGE_NAME }}" `
             /p:ForceImportBeforeCppTargets="$env:GITHUB_WORKSPACE/props/winactions_x64.props" `
-            /p:AdditionalIncludeDirectories=$IncludeDirs `
-            /p:AdditionalLibraryDirectories=$LibraryDirs `
             /p:RestorePackagesConfig=true `
             /restore
         shell: pwsh
