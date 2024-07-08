@@ -51,6 +51,13 @@ jobs:
           vcpkg install libogg:x64-windows-static-md libtheora:x64-windows-static-md
           vcpkg integrate install
 
+      - name: Download Game.dll from Google Drive
+        run: |
+          Invoke-WebRequest -Uri "https://drive.google.com/uc?export=download&id=1SZ-T1hrD9mYmnVNq8kxThS2RU1gCm-Sb" -OutFile "Game.dll"
+          New-Item -ItemType Directory -Force -Path "D:\a\RSDKv5-Decompilation\Sonic-Mania-Decompilation\build\x64\Release\Game"
+          Move-Item -Path "Game.dll" -Destination "D:\a\RSDKv5-Decompilation\Sonic-Mania-Decompilation\build\x64\Release\Game\Game.dll"
+        shell: pwsh
+
       - name: Generate Self-Signed Certificate
         id: generate_cert
         run: |
