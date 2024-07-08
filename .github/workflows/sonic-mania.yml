@@ -35,16 +35,25 @@ jobs:
 
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v2
-            
-      - name: Install Chocolatey
+
+      - name: Download Visual Studio 2010 Express
         run: |
-          Set-ExecutionPolicy Bypass -Scope Process -Force
-          [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072 #TLS 1.2 support for Invoke-WebRequest
-          Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
-        
-      - name: Install Visual Studio 2010 Build Tools
+          Invoke-WebRequest -Uri "https://archive.org/download/vs-2010-express-1/VS2010Express1.iso" -OutFile "VS2010Express1.iso"
+
+      - name: Mount ISO
         run: |
-          choco install visualstudio2010buildtools -y
+          Mount-DiskImage -ImagePath "VS2010Express1.iso"
+        shell: pwsh
+
+      - name: Install Visual Studio 2010 Express
+        run: |
+          $mountedDrive = (Get-DiskImage -ImagePath "VS2010Express1.iso" | Get-Volume).DriveLetter
+          Start-Process -FilePath "$($mountedDrive):\setup.exe" -ArgumentList "/q" -Wait
+
+      - name: Unmount ISO
+        run: |
+          Dismount-DiskImage -ImagePath "VS2010Express1.iso"
+        shell: pwsh
 
       - name: Build libogg
         run: |
@@ -79,7 +88,7 @@ jobs:
           New-Item -ItemType Directory -Force -Path "D:\a\RSDKv5-Decompilation\RSDKv5-Example-Mods\ManiaTouchControls\build\x64\Release"
           Move-Item -Path "ManiaTouchControls.dll" -Destination "D:\a\RSDKv5-Decompilation\RSDKv5-Example-Mods\ManiaTouchControls\build\x64\Release\ManiaTouchControls.dll"
         shell: pwsh
-      
+
       - name: Generate Self-Signed Certificate
         id: generate_cert
         run: |
