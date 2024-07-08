@@ -60,7 +60,7 @@ jobs:
 
       - name: Run vcpkg
         run: |
-          vcpkg install libogg:x64-windows-static-md libtheora:x64-windows-static-md
+          vcpkg install glew sdl2 libogg:x64-windows-static-md libtheora:x64-windows-static-md
           vcpkg integrate install
 
       - name: Generate Self-Signed Certificate
