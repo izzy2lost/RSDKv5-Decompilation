@@ -46,24 +46,8 @@ jobs:
         run: |
           git clone https://github.com/microsoft/vcpkg.git
           .\vcpkg\bootstrap-vcpkg.bat
-          .\vcpkg\vcpkg install libogg:x64-windows-static-md
+          .\vcpkg\vcpkg install libogg:x64-windows-static-md libtheora:x64-windows-static-md
           .\vcpkg\vcpkg integrate install
-
-      - name: Download and build libtheora
-        run: |
-          Invoke-WebRequest -Uri "https://downloads.xiph.org/releases/theora/libtheora-1.2.0alpha1.zip" -OutFile "libtheora.zip"
-          Expand-Archive -Path libtheora.zip -DestinationPath ./dependencies/windows/
-          Rename-Item ./dependencies/windows/libtheora-1.2.0alpha1 libtheora
-          cd ./dependencies/windows/libtheora/win32/VS2010
-          msbuild libtheora_static.sln /p:PlatformToolset=v143 /p:WindowsTargetPlatformVersion=10.0.19041.0 /p:Configuration=Release /p:Platform=x64 /p:AdditionalIncludeDirectories="$env:GITHUB_WORKSPACE\dependencies\windows\libogg\include" /p:AdditionalLibraryDirectories="$env:GITHUB_WORKSPACE\dependencies\windows\libogg\win32\VS2015\Release\x64"
-          cd ../../../../
-
-      - name: Verify libtheora build
-        run: |
-          if (-Not (Test-Path "./dependencies/windows/libtheora/win32/VS2010/Release/x64/libtheora_static.lib")) {
-            Write-Error "libtheora build failed or output not found."
-            exit 1
-          }
 
       - name: Download Game.dll from Google Drive
         run: |
