@@ -36,13 +36,19 @@ jobs:
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v2
             
+      - name: Download and Install Visual Studio 2010 Build Tools
+        run: |
+          Invoke-WebRequest -Uri "https://download.microsoft.com/download/0/B/C/0BC321A4-013F-479C-84E6-4A2F90B11269/VS2010Express1.iso" -OutFile "VS2010Express1.iso"
+          Mount-DiskImage -ImagePath ".\VS2010Express1.iso" -PassThru | Get-Volume | Get-Partition | Get-PartitionSupportedSize | Resize-Partition
+          Install-Package -Name Microsoft.VisualStudio.SpellChecker -RequiredVersion 16.0.2.0
+
       - name: Build libogg
         run: |
-          msbuild ./dependencies/windows/libogg/win32/VS2010/libogg_static.sln /p:Configuration=Release /p:Platform=x64
+          msbuild ./dependencies/windows/libogg/win32/VS2010/libogg_static.sln /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v100
 
       - name: Build libtheora
         run: |
-          msbuild ./dependencies/windows/libtheora/win32/VS2010/libtheora_static.sln /p:Configuration=Release /p:Platform=x64
+          msbuild ./dependencies/windows/libtheora/win32/VS2010/libtheora_static.sln /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v100
 
       - name: Download GLEW
         run: |
