@@ -42,8 +42,12 @@ jobs:
           .\vcpkg\bootstrap-vcpkg.bat
 
       - name: Install Dependencies with vcpkg
-        run: |
-          .\vcpkg\vcpkg.exe install libtheora libogg --triplet=x64-windows-static
+        uses: lukka/run-vcpkg@v11.5
+        with:
+          packages: |
+            libtheora
+            libogg
+          triplet: x64-windows-static
 
       - name: Download GLEW
         run: |
