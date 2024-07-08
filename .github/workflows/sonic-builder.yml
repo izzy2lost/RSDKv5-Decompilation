@@ -17,6 +17,17 @@ jobs:
   build:
     runs-on: windows-2022
 
+    env:
+      SolutionPath: RSDKv5.sln
+      Platform: x64
+      Configuration: Release
+      BuildMode: SideLoadOnly
+      AppxBundle: Never
+      ProjectPath: RSDKv5/RSDKv5.UWP.vcxproj
+      ProjectDirectory: .\RSDKv5
+      PackageOutputRootDir: C:\AppPackage
+      PackageOutputDir: RSDKv5
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v1
@@ -52,18 +63,66 @@ jobs:
           vcpkg install libogg:x64-windows-static-md libtheora:x64-windows-static-md
           vcpkg integrate install
 
-      - name: Build RSDKv5
+      - name: Generate Self-Signed Certificate
+        id: generate_cert
         run: |
-          msbuild RSDKv5.sln /p:Configuration=Release /p:Platform=x64
+          $cert = New-SelfSignedCertificate -CertStoreLocation "Cert:\CurrentUser\My" -Subject "CN=MyUWPCert" -KeyAlgorithm RSA -KeyLength 2048 -Provider "Microsoft Enhanced RSA and AES Cryptographic Provider" -KeyExportPolicy Exportable -NotAfter (Get-Date).AddYears(1) -Type CodeSigningCert
+          echo "THUMBPRINT=$($cert.Thumbprint)" >> $env:GITHUB_ENV
+        shell: pwsh
 
-      - name: Move artifacts
+      - name: Set Package Name
+        id: set_package_name
         run: |
-          mkdir artifacts
-          move ./build/x64/Release/*.dll ./artifacts
-          move ./build/x64/Release/*.exe ./artifacts
+          echo "PACKAGE_NAME=${{ github.event.inputs.package_name }}_${{ github.event.inputs.tag_name }}" >> $GITHUB_ENV
 
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v1
+      - name: App Build
+        run: |
+          msbuild $env:SolutionPath `
+            /p:Platform=$env:Platform `
+            /p:Configuration=$env:Configuration `
+            /p:UapAppxPackageBuildMode=$env:BuildMode `
+            /p:AppxBundle=$env:AppxBundle `
+            /p:PackageCertificateThumbprint="${{ env.THUMBPRINT }}" `
+            /p:AppxPackageTestDir="${{ env.PackageOutputRootDir }}\${{ env.PACKAGE_NAME }}" `
+            /p:ForceImportBeforeCppTargets="$env:GITHUB_WORKSPACE/props/winactions_x64.props" `
+            /restore
+        shell: pwsh
+
+      - name: Clean the Package
+        run: |
+          $PackagePath = "${{ env.PackageOutputRootDir }}\${{ env.PACKAGE_NAME }}"
+          if (Test-Path $PackagePath) {
+            Write-Host "Cleaning package directory: $PackagePath"
+            Remove-Item -Recurse -path "$PackagePath\Add-AppDevPackage.resources" -ErrorAction SilentlyContinue
+            Remove-Item -Recurse -path "$PackagePath\TelemetryDependencies" -ErrorAction SilentlyContinue
+            Remove-Item -Recurse -path "$PackagePath\Dependencies\arm" -ErrorAction SilentlyContinue
+            Remove-Item -Recurse -path "$PackagePath\Dependencies\arm64" -ErrorAction SilentlyContinue
+            Remove-Item -Recurse -path "$PackagePath\Dependencies\x86" -ErrorAction SilentlyContinue
+            Remove-Item -Recurse -path "$PackagePath\Dependencies\Win32" -ErrorAction SilentlyContinue
+            Remove-Item -path "$PackagePath\Add-AppDevPackage.ps1" -ErrorAction SilentlyContinue
+            Remove-Item -Recurse -path "$PackagePath\Install.ps1" -ErrorAction SilentlyContinue
+          } else {
+            Write-Host "Package path does not exist: $PackagePath"
+            exit 1
+          }
+        shell: pwsh
+
+      - name: Create Archive
+        run: |
+          $PackagePath = "${{ env.PackageOutputRootDir }}\${{ env.PACKAGE_NAME }}"
+          if (Test-Path $PackagePath) {
+            Write-Host "Creating archive for: $PackagePath"
+            Compress-Archive -Path "$PackagePath\*" -DestinationPath "${{ env.PackageOutputRootDir }}\${{ env.PACKAGE_NAME }}.zip"
+            Write-Host "Contents of package output directory after archiving:"
+            Get-ChildItem -Path "${{ env.PackageOutputRootDir }}" -Recurse
+          } else {
+            Write-Host "Package path does not exist for archiving: $PackagePath"
+            exit 1
+          }
+        shell: pwsh
+
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v4.3.4
         with:
-          name: ${{ github.event.inputs.package_name }}-windows-x64
-          path: artifacts
+          name: ${{ github.event.inputs.package_name }} Build
+          path: ${{ env.PackageOutputRootDir }}\${{ env.PACKAGE_NAME }}.zip
