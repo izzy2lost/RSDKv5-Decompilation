@@ -74,7 +74,7 @@ jobs:
           echo "PACKAGE_NAME=${{ github.event.inputs.package_name }}_${{ github.event.inputs.tag_name }}" >> $GITHUB_ENV
 
       - name: Build RSDKv5 UWP
-        run: |
+        run: 
           msbuild $env:SolutionPath -target:RSDKv5-UWP `
             /p:PlatformToolset=v143 `
             /p:Platform=$Platform `
