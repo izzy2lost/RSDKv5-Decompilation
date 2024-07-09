@@ -73,16 +73,21 @@ jobs:
 
       - name: Install Visual Studio 2010 Express
         run: |
-          $filePath = "${{ runner.temp }}\VS2010Express1.iso"
-          $driveLetter = (Get-DiskImage -ImagePath $filePath | Get-Volume).DriveLetter
-          Write-Host "Starting Visual Studio 2010 Express installation from drive $driveLetter"
-          Start-Process -FilePath "mshta.exe" -ArgumentList "$($driveLetter):\Setup.hta" -Wait -NoNewWindow -PassThru
-          $exitCode = $LastExitCode
-          if ($exitCode -ne 0) {
-            Write-Host "Visual Studio 2010 Express installation failed with exit code $exitCode"
-            exit $exitCode
+          $driveLetter = (Get-DiskImage -ImagePath "${{ runner.temp }}\VS2010Express1.iso" | Get-Volume).DriveLetter
+          $setupPath = "$($driveLetter):\VCExpress\setup.exe"
+          if (Test-Path -Path $setupPath) {
+            Write-Host "Starting Visual Studio 2010 Express installation from $setupPath."
+            Start-Process -FilePath $setupPath -ArgumentList "/q" -Wait -NoNewWindow -PassThru
+            $exitCode = $LastExitCode
+            if ($exitCode -ne 0) {
+              Write-Host "Visual Studio 2010 Express installation failed with exit code $exitCode"
+              exit $exitCode
+            } else {
+              Write-Host "Visual Studio 2010 Express installed successfully"
+            }
           } else {
-            Write-Host "Visual Studio 2010 Express installed successfully"
+            Write-Host "setup.exe not found in VCExpress folder."
+            exit 1
           }
         shell: pwsh
 
@@ -150,22 +155,4 @@ jobs:
             /p:RestorePackagesConfig=true `
             /restore
         shell: pwsh
-
-      - name: Clean the Package
-        run: |
-          $PackagePath = "${{ env.PackageOutputRootDir }}\${{ env.PACKAGE_NAME }}"
-          if (Test-Path $PackagePath) {
-            Write-Host "Cleaning package directory: $PackagePath"
-            Remove-Item -Recurse -path "$PackagePath\Add-AppDevPackage.resources" -ErrorAction SilentlyContinue
-            Remove-Item -Recurse -path "$PackagePath\TelemetryDependencies" -ErrorAction SilentlyContinue
-            Remove-Item -Recurse -path "$PackagePath\Dependencies\arm" -ErrorAction SilentlyContinue
-            Remove-Item -Recurse -path "$PackagePath\Dependencies\arm64" -ErrorAction SilentlyContinue
-            Remove-Item -Recurse -path "$PackagePath\Dependencies\x86" -ErrorAction SilentlyContinue
-            Remove-Item -Recurse -path "$PackagePath\Dependencies\Win32" -ErrorAction SilentlyContinue
-            Remove-Item -path "$PackagePath\Add-AppDevPackage.ps1" -ErrorAction SilentlyContinue
-            Remove-Item -Recurse -path "$PackagePath\Install.ps1" -ErrorAction SilentlyContinue
-          } else {
-            Write-Host "Package path does not exist: $PackagePath"
-            exit 1
-          }
-        shell: pwsh
+        
