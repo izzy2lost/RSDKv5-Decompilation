@@ -83,10 +83,11 @@ jobs:
         run: |
           echo "PACKAGE_NAME=${{ github.event.inputs.package_name }}_${{ github.event.inputs.tag_name }}" >> $GITHUB_ENV
 
+
       - name: App Build
         run: |
-          $env:SDL2_INCLUDE_DIR = "$env:GITHUB_WORKSPACE\dependencies\windows\SDL2\include"
-          $env:SDL2_LIB_DIR = "$env:GITHUB_WORKSPACE\dependencies\windows\SDL2\lib\x64"
+          $SDL2_INCLUDE_DIR = "$env:GITHUB_WORKSPACE\dependencies\windows\SDL2\include"
+          $SDL2_LIB_DIR = "$env:GITHUB_WORKSPACE\dependencies\windows\SDL2\lib\x64"
           msbuild $env:SolutionPath -target:RSDKv5-UWP `
             /p:Platform=$env:Platform `
             /p:Configuration=$env:Configuration `
@@ -96,9 +97,9 @@ jobs:
             /p:AppxPackageTestDir="${{ env.PackageOutputRootDir }}\${{ env.PACKAGE_NAME }}" `
             /p:ForceImportBeforeCppTargets="$env:GITHUB_WORKSPACE/props/winactions_x64.props" `
             /p:RestorePackagesConfig=true `
-            /p:SDL2IncludeDir="$env:SDL2_INCLUDE_DIR" `
-            /p:SDL2LibDir="$env:SDL2_LIB_DIR" `
-            /p:AdditionalLibraryDirectories="$env:SDL2_LIB_DIR" `
+            /p:SDL2IncludeDir="$SDL2_INCLUDE_DIR" `
+            /p:SDL2LibDir="$SDL2_LIB_DIR" `
+            /p:AdditionalLibraryDirectories="$SDL2_LIB_DIR" `
             /p:AdditionalDependencies="SDL2.lib" `
             /restore
         shell: pwsh
