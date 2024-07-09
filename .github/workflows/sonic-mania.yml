@@ -40,21 +40,27 @@ jobs:
         run: pip install gdown
 
       - name: Download Visual Studio 2010 Express
-        run: gdown --id 1ThQ_3sKIKvD28r8Tlc7ED4ycP7r_5AyV -O VS2010Express1.iso
+        run: gdown --id 1ThQ_3sKIKvD28r8Tlc7ED4ycP7r_5AyV -O ${{ runner.temp }}/VS2010Express1.iso
 
       - name: Verify ISO file presence
         run: |
-          if (Test-Path -Path "VS2010Express1.iso") {
-            Write-Host "ISO file exists."
+          $filePath = "${{ runner.temp }}\VS2010Express1.iso"
+          if (Test-Path -Path $filePath) {
+            Write-Host "ISO file exists at $filePath."
           } else {
-            Write-Host "ISO file does not exist."
+            Write-Host "ISO file does not exist at $filePath."
             exit 1
           }
         shell: pwsh
 
+      - name: List current directory contents
+        run: dir ${{ runner.temp }}
+        shell: pwsh
+
       - name: Mount ISO
         run: |
-          $mountResult = Mount-DiskImage -ImagePath "VS2010Express1.iso" -PassThru
+          $filePath = "${{ runner.temp }}\VS2010Express1.iso"
+          $mountResult = Mount-DiskImage -ImagePath $filePath -PassThru
           if ($mountResult) {
             Write-Host "ISO mounted successfully."
             $driveLetter = ($mountResult | Get-Volume).DriveLetter
@@ -67,12 +73,13 @@ jobs:
 
       - name: Install Visual Studio 2010 Express
         run: |
-          $driveLetter = (Get-DiskImage -ImagePath "VS2010Express1.iso" | Get-Volume).DriveLetter
+          $filePath = "${{ runner.temp }}\VS2010Express1.iso"
+          $driveLetter = (Get-DiskImage -ImagePath $filePath | Get-Volume).DriveLetter
           Start-Process -FilePath "$($driveLetter):\setup.exe" -ArgumentList "/q" -Wait
 
       - name: Unmount ISO
         run: |
-          Dismount-DiskImage -ImagePath "VS2010Express1.iso"
+          Dismount-DiskImage -ImagePath "${{ runner.temp }}\VS2010Express1.iso"
         shell: pwsh
 
       - name: Build libogg
