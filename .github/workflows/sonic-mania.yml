@@ -60,7 +60,9 @@ jobs:
         run: |
           cd dependencies/windows/libtheora
           chmod +x autogen.sh
+          chmod +x configure
           ./autogen.sh
+          ./configure
           make
           sudo make install
 
