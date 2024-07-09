@@ -42,25 +42,22 @@ jobs:
       - name: Build libogg
         run: |
           cd dependencies/windows/libogg
-          cmake -Bbuild -H.
-          cmake --build build --config Release
-          cd build
+          cmake -G "Visual Studio 16 2019" -A x64 .
+          cmake --build . --config Release
           cmake --install . --prefix "C:/libogg"
 
       - name: Build libvorbis
         run: |
           cd dependencies/windows/libvorbis
-          cmake -Bbuild -H.
-          cmake --build build --config Release
-          cd build
+          cmake -G "Visual Studio 16 2019" -A x64 .
+          cmake --build . --config Release
           cmake --install . --prefix "C:/libvorbis"
 
       - name: Build libtheora
         run: |
           cd dependencies/windows/libtheora
-          cmake -Bbuild -H.
-          cmake --build build --config Release
-          cd build
+          cmake -G "Visual Studio 16 2019" -A x64 .
+          cmake --build . --config Release
           cmake --install . --prefix "C:/libtheora"
 
       - name: Download Game.dll from Google Drive
