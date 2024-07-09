@@ -45,7 +45,7 @@ jobs:
 
       - name: Build libtheora
         run: |
-          msbuild ./dependencies/windows/libtheora/win32/VS2008/libtheora_static.sln /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v143
+          msbuild ./dependencies/windows/libtheora/win32/VS2006/libtheora_static.sln /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v143
 
       - name: Download Game.dll from Google Drive
         run: |
