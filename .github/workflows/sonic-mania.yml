@@ -44,15 +44,7 @@ jobs:
           chmod +x autogen.sh
           ./autogen.sh
           make
-          sudo make install
-
-      - name: Build libvorbis
-        run: |
-          cd dependencies/windows/libvorbis
-          chmod +x autogen.sh
-          ./autogen.sh
-          make
-          sudo make install
+          sudo make install      
 
       - name: Build libtheora
         run: |
