@@ -36,6 +36,9 @@ jobs:
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v2
 
+      - name: Install wget
+        run: choco install wget -y
+
       - name: Download vc_web.exe
         run: |
           wget -O ${{ runner.temp }}/vc_web.exe "https://github.com/grantopher/Sneakers-and-Cake/raw/master/vc_web.exe"
