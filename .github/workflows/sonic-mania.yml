@@ -29,36 +29,26 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2
         with:
           submodules: recursive
 
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v1
 
-      - name: Install Dependencies
-        run: choco install -y cmake make
-
-      - name: Build libogg
+      - name: Install vcpkg
         run: |
-          cd dependencies/windows/libogg
-          cmake -G "Visual Studio 16 2019" -A x64 .
-          cmake --build . --config Release
-          cmake --install . --prefix "C:/libogg"
+          git clone https://github.com/microsoft/vcpkg.git
+          .\vcpkg\bootstrap-vcpkg.bat
 
-      - name: Build libvorbis
+      - name: Install Dependencies using vcpkg
         run: |
-          cd dependencies/windows/libvorbis
-          cmake -G "Visual Studio 16 2019" -A x64 .
-          cmake --build . --config Release
-          cmake --install . --prefix "C:/libvorbis"
+          .\vcpkg\vcpkg.exe install libtheora libogg --triplet=x64-windows-static
 
-      - name: Build libtheora
+      - name: Configure vcpkg integration
         run: |
-          cd dependencies/windows/libtheora
-          cmake -G "Visual Studio 16 2019" -A x64 .
-          cmake --build . --config Release
-          cmake --install . --prefix "C:/libtheora"
+          echo "VCPKG_ROOT=$env:GITHUB_WORKSPACE\\vcpkg" >> $env:GITHUB_ENV
+          echo "VCPKG_DEFAULT_TRIPLET=x64-windows-static" >> $env:GITHUB_ENV
 
       - name: Download Game.dll from Google Drive
         run: |
@@ -85,7 +75,7 @@ jobs:
         id: set_package_name
         run: |
           echo "PACKAGE_NAME=${{ github.event.inputs.package_name }}_${{ github.event.inputs.tag_name }}" >> $GITHUB_ENV
-          
+
       - name: App Build
         run: |
           msbuild $env:SolutionPath -target:RSDKv5-UWP `
