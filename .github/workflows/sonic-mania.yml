@@ -42,6 +42,16 @@ jobs:
       - name: Download Visual Studio 2010 Express
         run: gdown --id 1ThQ_3sKIKvD28r8Tlc7ED4ycP7r_5AyV -O VS2010Express1.iso
 
+      - name: Verify ISO file presence
+        run: |
+          if (Test-Path -Path "VS2010Express1.iso") {
+            Write-Host "ISO file exists."
+          } else {
+            Write-Host "ISO file does not exist."
+            exit 1
+          }
+        shell: pwsh
+
       - name: Mount ISO
         run: |
           Mount-DiskImage -ImagePath "VS2010Express1.iso"
