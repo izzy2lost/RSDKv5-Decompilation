@@ -46,7 +46,7 @@ jobs:
 
       - name: Install Dependencies using vcpkg
         run: |
-          .\vcpkg\vcpkg.exe install sdl libtheora libogg --triplet=x64-windows-static
+          .\vcpkg\vcpkg.exe install libtheora libogg sdl2 --triplet=x64-windows-static
 
       - name: Configure vcpkg integration
         run: |
