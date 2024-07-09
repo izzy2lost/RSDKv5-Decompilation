@@ -17,6 +17,8 @@ jobs:
     runs-on: windows-2022
 
     env:
+      VCPKG_ROOT: $(System.DefaultWorkingDirectory)/vcpkg
+      VCPKG_DEFAULT_TRIPLET: x64-windows-static
       SolutionPath: RSDKv5.sln
       Platform: x64
       Configuration: Release
@@ -36,7 +38,7 @@ jobs:
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v1
 
-      - name: Install Dependencies
+      - name: Install wget
         run: choco install -y wget
 
       - name: Install vcpkg
@@ -50,8 +52,10 @@ jobs:
 
       - name: Configure vcpkg integration
         run: |
+          .\vcpkg\vcpkg integrate install
           echo "VCPKG_ROOT=$env:GITHUB_WORKSPACE\\vcpkg" >> $env:GITHUB_ENV
           echo "VCPKG_DEFAULT_TRIPLET=x64-windows-static" >> $env:GITHUB_ENV
+          echo "VCPKG_PATH=$env:GITHUB_WORKSPACE\\vcpkg\\installed\\x64-windows-static" >> $env:GITHUB_ENV
 
       - name: Download Game.dll from Google Drive
         run: |
