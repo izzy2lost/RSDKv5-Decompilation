@@ -36,11 +36,11 @@ jobs:
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v2
 
-      - name: Install wget
-        run: choco install wget -y
+      - name: Install gdown
+        run: pip install gdown
 
       - name: Download Visual Studio 2010 Express
-        run: wget -O VS2010Express1.iso "https://archive.org/download/vs-2010-express-1/VS2010Express1.iso"
+        run: gdown --id 1ThQ_3sKIKvD28r8Tlc7ED4ycP7r_5AyV -O VS2010Express1.iso
 
       - name: Mount ISO
         run: |
