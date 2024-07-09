@@ -14,7 +14,7 @@ on:
 
 jobs:
   build:
-    runs-on: windows-2022
+    runs-on: windows-2019
 
     env:
       SolutionPath: RSDKv5.sln
@@ -36,46 +36,72 @@ jobs:
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v2
 
-      - name: Install wget
-        run: choco install wget -y
+      - name: Install gdown
+        run: pip install gdown
 
-      - name: Download vc_web.exe
-        run: |
-          wget -O ${{ runner.temp }}/vc_web.exe "https://github.com/grantopher/Sneakers-and-Cake/raw/master/vc_web.exe"
+      - name: Download Visual Studio 2010 Express
+        run: gdown --id 1ThQ_3sKIKvD28r8Tlc7ED4ycP7r_5AyV -O ${{ runner.temp }}/VS2010Express1.iso
 
-      - name: Verify vc_web.exe presence
+      - name: Verify ISO file presence
         run: |
-          $filePath = "${{ runner.temp }}\vc_web.exe"
+          $filePath = "${{ runner.temp }}\VS2010Express1.iso"
           if (Test-Path -Path $filePath) {
-            Write-Host "vc_web.exe file exists at $filePath."
+            Write-Host "ISO file exists at $filePath."
           } else {
-            Write-Host "vc_web.exe file does not exist at $filePath."
+            Write-Host "ISO file does not exist at $filePath."
+            exit 1
+          }
+        shell: pwsh
+
+      - name: List current directory contents
+        run: dir ${{ runner.temp }}
+        shell: pwsh
+
+      - name: Mount ISO
+        run: |
+          $filePath = "${{ runner.temp }}\VS2010Express1.iso"
+          $mountResult = Mount-DiskImage -ImagePath $filePath -PassThru
+          if ($mountResult) {
+            Write-Host "ISO mounted successfully."
+            $driveLetter = ($mountResult | Get-Volume).DriveLetter
+            Write-Host "Drive Letter: $driveLetter"
+          } else {
+            Write-Host "Failed to mount ISO."
             exit 1
           }
         shell: pwsh
 
       - name: Install Visual Studio 2010 Express
         run: |
-          $filePath = "${{ runner.temp }}\vc_web.exe"
-          Write-Host "Starting Visual Studio 2010 Express installation from $filePath."
-          Start-Process -FilePath $filePath -ArgumentList "/quiet /norestart" -Wait -NoNewWindow -PassThru
-          $exitCode = $LastExitCode
-          if ($exitCode -ne 0) {
-            Write-Host "Visual Studio 2010 Express installation failed with exit code $exitCode"
-            exit $exitCode
+          $driveLetter = (Get-DiskImage -ImagePath "${{ runner.temp }}\VS2010Express1.iso" | Get-Volume).DriveLetter
+          $setupPath = "$($driveLetter):\VCExpress\setup.exe"
+          if (Test-Path -Path $setupPath) {
+            Write-Host "Starting Visual Studio 2010 Express installation from $setupPath."
+            Start-Process -FilePath $setupPath -ArgumentList "/q" -Wait -NoNewWindow -PassThru
+            $exitCode = $LastExitCode
+            if ($exitCode -ne 0) {
+              Write-Host "Visual Studio 2010 Express installation failed with exit code $exitCode"
+              exit $exitCode
+            } else {
+              Write-Host "Visual Studio 2010 Express installed successfully"
+            }
           } else {
-            Write-Host "Visual Studio 2010 Express installed successfully"
+            Write-Host "setup.exe not found in VCExpress folder."
+            exit 1
           }
+        shell: pwsh
+
+      - name: Unmount ISO
+        run: |
+          Dismount-DiskImage -ImagePath "${{ runner.temp }}\VS2010Express1.iso"
         shell: pwsh
 
       - name: Build libogg
         run: |
           msbuild ./dependencies/windows/libogg/win32/VS2010/libogg_static.sln /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v100
-
       - name: Build libtheora
         run: |
           msbuild ./dependencies/windows/libtheora/win32/VS2010/libtheora_static.sln /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v100
-
       - name: Download GLEW
         run: |
           wget -O GLEW.zip "https://github.com/nigels-com/glew/releases/download/glew-2.2.0/glew-2.2.0-win32.zip"
@@ -126,23 +152,4 @@ jobs:
             /p:ForceImportBeforeCppTargets="$env:GITHUB_WORKSPACE/props/winactions_x64.props" `
             /p:RestorePackagesConfig=true `
             /restore
-        shell: pwsh
-
-      - name: Clean the Package
-        run: |
-          $PackagePath = "${{ env.PackageOutputRootDir }}\${{ env.PACKAGE_NAME }}"
-          if (Test-Path $PackagePath) {
-            Write-Host "Cleaning package directory: $PackagePath"
-            Remove-Item -Recurse -path "$PackagePath\Add-AppDevPackage.resources" -ErrorAction SilentlyContinue
-            Remove-Item -Recurse -path "$PackagePath\TelemetryDependencies" -ErrorAction SilentlyContinue
-            Remove-Item -Recurse -path "$PackagePath\Dependencies\arm" -ErrorAction SilentlyContinue
-            Remove-Item -Recurse -path "$PackagePath\Dependencies\arm64" -ErrorAction SilentlyContinue
-            Remove-Item -Recurse -path "$PackagePath\Dependencies\x86" -ErrorAction SilentlyContinue
-            Remove-Item -Recurse -path "$PackagePath\Dependencies\Win32" -ErrorAction SilentlyContinue
-            Remove-Item -path "$PackagePath\Add-AppDevPackage.ps1" -ErrorAction SilentlyContinue
-            Remove-Item -Recurse -path "$PackagePath\Install.ps1" -ErrorAction SilentlyContinue
-          } else {
-            Write-Host "Package path does not exist: $PackagePath"
-            exit 1
-          }
         shell: pwsh
