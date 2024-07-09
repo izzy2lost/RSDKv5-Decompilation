@@ -41,6 +41,7 @@ jobs:
       - name: Build libogg
         run: |
           cd dependencies/windows/libogg
+          chmod +x autogen.sh
           ./autogen.sh
           make
           sudo make install
@@ -48,6 +49,7 @@ jobs:
       - name: Build libvorbis
         run: |
           cd dependencies/windows/libvorbis
+          chmod +x autogen.sh
           ./autogen.sh
           make
           sudo make install
@@ -55,6 +57,7 @@ jobs:
       - name: Build libtheora
         run: |
           cd dependencies/windows/libtheora
+          chmod +x autogen.sh
           ./autogen.sh
           make
           sudo make install
