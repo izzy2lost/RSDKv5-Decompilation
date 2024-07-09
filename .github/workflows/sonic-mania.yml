@@ -43,6 +43,10 @@ jobs:
         run: |
           msbuild ./dependencies/windows/libogg/win32/VS2010/libogg_static.sln /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v143
 
+      - name: Build libvorbis
+        run: |
+          msbuild ./dependencies/windows/libvorbis/win32/VS2010/vorbis_static.sln /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v143
+
       - name: Build libtheora
         run: |
           msbuild ./dependencies/windows/libtheora/win32/VS2010/libtheora_static.sln /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v143
