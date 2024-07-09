@@ -36,13 +36,14 @@ jobs:
       - name: Install Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y autoconf automake libtool make gcc
+          sudo apt-get install -y autoconf automake libtool make gcc pkg-config
 
       - name: Build libogg
         run: |
           cd dependencies/windows/libogg
           chmod +x autogen.sh
           ./autogen.sh
+          ./configure --host=x86_64-pc-linux-gnu
           make
           sudo make install
 
@@ -50,17 +51,17 @@ jobs:
         run: |
           cd dependencies/windows/libvorbis
           chmod +x autogen.sh
-          chmod +x configure
           ./autogen.sh
-          ./configure
+          ./configure --host=x86_64-pc-linux-gnu
           make
           sudo make install
 
       - name: Build libtheora
         run: |
           cd dependencies/windows/libtheora
-          chmod +x configure
-          ./configure
+          chmod +x autogen.sh
+          ./autogen.sh
+          ./configure --host=x86_64-pc-linux-gnu
           make
           sudo make install
 
