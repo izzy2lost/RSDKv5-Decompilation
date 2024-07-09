@@ -54,13 +54,21 @@ jobs:
 
       - name: Mount ISO
         run: |
-          Mount-DiskImage -ImagePath "VS2010Express1.iso"
+          $mountResult = Mount-DiskImage -ImagePath "VS2010Express1.iso" -PassThru
+          if ($mountResult) {
+            Write-Host "ISO mounted successfully."
+            $driveLetter = ($mountResult | Get-Volume).DriveLetter
+            Write-Host "Drive Letter: $driveLetter"
+          } else {
+            Write-Host "Failed to mount ISO."
+            exit 1
+          }
         shell: pwsh
 
       - name: Install Visual Studio 2010 Express
         run: |
-          $mountedDrive = (Get-DiskImage -ImagePath "VS2010Express1.iso" | Get-Volume).DriveLetter
-          Start-Process -FilePath "$($mountedDrive):\setup.exe" -ArgumentList "/q" -Wait
+          $driveLetter = (Get-DiskImage -ImagePath "VS2010Express1.iso" | Get-Volume).DriveLetter
+          Start-Process -FilePath "$($driveLetter):\setup.exe" -ArgumentList "/q" -Wait
 
       - name: Unmount ISO
         run: |
