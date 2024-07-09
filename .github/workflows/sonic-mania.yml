@@ -35,10 +35,22 @@ jobs:
 
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v1
-      
+
       - name: Install wget
         run: choco install wget -y
-   
+
+      - name: Apply Patch to encoder_example.c
+        run: |
+          sed -i '1i#ifndef rint\n#define rint(x) ((int)((x) + 0.5))\n#endif\n' ./dependencies/windows/libtheora/examples/encoder_example.c
+
+      - name: Build libogg
+        run: |
+          msbuild ./dependencies/windows/libogg/win32/VS2010/libogg_static.sln /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v143
+
+      - name: Build libtheora
+        run: |
+          msbuild ./dependencies/windows/libtheora/win32/VS2010/libtheora_static.sln /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v143
+
       - name: Download Game.dll from Google Drive
         run: |
           wget -O Game.dll "https://drive.google.com/uc?export=download&id=1SZ-T1hrD9mYmnVNq8kxThS2RU1gCm-Sb"
@@ -52,18 +64,6 @@ jobs:
           New-Item -ItemType Directory -Force -Path "D:\a\RSDKv5-Decompilation\RSDKv5-Example-Mods\ManiaTouchControls\build\x64\Release"
           Move-Item -Path "ManiaTouchControls.dll" -Destination "D:\a\RSDKv5-Decompilation\RSDKv5-Example-Mods\ManiaTouchControls\build\x64\Release\ManiaTouchControls.dll"
         shell: pwsh
-
-      - name: Apply Patch to encoder_example.c
-        run: |
-          sed -i '1i#ifndef rint\n#define rint(x) ((int)((x) + 0.5))\n#endif\n' ./dependencies/windows/libtheora/examples/encoder_example.c
-
-      - name: Build libogg
-        run: |
-          msbuild ./dependencies/windows/libogg/win32/VS2010/libogg_static.sln /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v143
-
-      - name: Build libtheora
-        run: |
-          msbuild ./dependencies/windows/libtheora/win32/VS2010/libtheora_static.sln /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v143
 
       - name: Generate Self-Signed Certificate
         id: generate_cert
