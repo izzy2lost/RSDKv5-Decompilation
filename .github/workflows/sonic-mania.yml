@@ -53,6 +53,10 @@ jobs:
           Move-Item -Path "ManiaTouchControls.dll" -Destination "D:\a\RSDKv5-Decompilation\RSDKv5-Example-Mods\ManiaTouchControls\build\x64\Release\ManiaTouchControls.dll"
         shell: pwsh
 
+      - name: Apply Patch to encoder_example.c
+        run: |
+          sed -i '1i#ifndef rint\n#define rint(x) ((int)((x) + 0.5))\n#endif\n' ./dependencies/windows/libtheora/examples/encoder_example.c
+
       - name: Build libogg
         run: |
           msbuild ./dependencies/windows/libogg/win32/VS2010/libogg_static.sln /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v143
