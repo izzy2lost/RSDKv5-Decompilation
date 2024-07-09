@@ -76,7 +76,7 @@ jobs:
           $filePath = "${{ runner.temp }}\VS2010Express1.iso"
           $driveLetter = (Get-DiskImage -ImagePath $filePath | Get-Volume).DriveLetter
           Write-Host "Starting Visual Studio 2010 Express installation from drive $driveLetter"
-          Start-Process -FilePath "$($driveLetter):\setup.exe" -ArgumentList "/q" -Wait -NoNewWindow -PassThru
+          Start-Process -FilePath "mshta.exe" -ArgumentList "$($driveLetter):\Setup.hta" -Wait -NoNewWindow -PassThru
           $exitCode = $LastExitCode
           if ($exitCode -ne 0) {
             Write-Host "Visual Studio 2010 Express installation failed with exit code $exitCode"
