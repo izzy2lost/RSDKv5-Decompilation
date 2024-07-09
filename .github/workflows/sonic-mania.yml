@@ -14,7 +14,7 @@ on:
 
 jobs:
   build:
-    runs-on: windows-2022
+    runs-on: ubuntu-latest  # Changed to Ubuntu for Unix build tools
 
     env:
       SolutionPath: RSDKv5.sln
@@ -33,37 +33,43 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Setup MSBuild
-        uses: microsoft/setup-msbuild@v1
+      - name: Install Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y autoconf automake libtool make gcc
 
-      - name: Install wget
-        run: choco install wget -y
-     
       - name: Build libogg
         run: |
-          msbuild ./dependencies/windows/libogg/win32/VS2010/libogg_static.sln /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v143
+          cd dependencies/windows/libogg
+          ./autogen.sh
+          make
+          sudo make install
 
       - name: Build libvorbis
         run: |
-          msbuild ./dependencies/windows/libvorbis/win32/VS2010/vorbis_static.sln /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v143
+          cd dependencies/windows/libvorbis
+          ./autogen.sh
+          make
+          sudo make install
 
       - name: Build libtheora
         run: |
-          msbuild ./dependencies/windows/libtheora/win32/VS2010/libtheora_static.sln /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v143
+          cd dependencies/windows/libtheora
+          ./autogen.sh
+          make
+          sudo make install
 
       - name: Download Game.dll from Google Drive
         run: |
           wget -O Game.dll "https://drive.google.com/uc?export=download&id=1SZ-T1hrD9mYmnVNq8kxThS2RU1gCm-Sb"
-          New-Item -ItemType Directory -Force -Path "D:\a\RSDKv5-Decompilation\Sonic-Mania-Decompilation\build\x64\Release\Game"
-          Move-Item -Path "Game.dll" -Destination "D:\a\RSDKv5-Decompilation\Sonic-Mania-Decompilation\build\x64\Release\Game\Game.dll"
-        shell: pwsh
+          mkdir -p build/x64/Release/Game
+          mv Game.dll build/x64/Release/Game/Game.dll
 
       - name: Download ManiaTouchControls.dll from Google Drive
         run: |
           wget -O ManiaTouchControls.dll "https://drive.google.com/uc?export=download&id=1Sh-qQXAoYwEMKotbjSMRv7JmPuDVHIgp"
-          New-Item -ItemType Directory -Force -Path "D:\a\RSDKv5-Decompilation\RSDKv5-Example-Mods\ManiaTouchControls\build\x64\Release"
-          Move-Item -Path "ManiaTouchControls.dll" -Destination "D:\a\RSDKv5-Decompilation\RSDKv5-Example-Mods\ManiaTouchControls\build\x64\Release\ManiaTouchControls.dll"
-        shell: pwsh
+          mkdir -p build/x64/Release/ManiaTouchControls
+          mv ManiaTouchControls.dll build/x64/Release/ManiaTouchControls/ManiaTouchControls.dll
 
       - name: Generate Self-Signed Certificate
         id: generate_cert
@@ -76,7 +82,7 @@ jobs:
         id: set_package_name
         run: |
           echo "PACKAGE_NAME=${{ github.event.inputs.package_name }}_${{ github.event.inputs.tag_name }}" >> $GITHUB_ENV
-          
+
       - name: App Build
         run: |
           msbuild $env:SolutionPath -target:RSDKv5-UWP `
