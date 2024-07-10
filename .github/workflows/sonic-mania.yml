@@ -36,6 +36,20 @@ jobs:
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v2
 
+      - name: Install Chocolatey
+        run: |
+          Set-ExecutionPolicy Bypass -Scope Process -Force; 
+          [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; 
+          iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+
+      - name: Install Dependencies
+        run: |
+          choco install git -y
+          choco install visualstudio2019buildtools -y
+          choco install visualstudio2019-workload-vctools -y
+          choco install visualstudio2019-workload-vctools --version=16.9.4 -y
+          choco install windows-sdk-8.1 -y
+
       - name: Download and Setup Dependencies
         run: |
           # Download libogg
@@ -44,7 +58,7 @@ jobs:
           Rename-Item ./dependencies/windows/libogg-1.3.5 libogg
           # Build libogg
           cd ./dependencies/windows/libogg/win32/VS2015
-          msbuild libogg.sln /p:Configuration=Release /p:PlatformToolset=v143
+          msbuild libogg.sln /p:Configuration=Release /p:PlatformToolset=v143 /p:WindowsTargetPlatformVersion=8.1
           cd ../../../../..
 
           # Download libtheora
@@ -53,7 +67,7 @@ jobs:
           Rename-Item ./dependencies/windows/libtheora-1.2.0alpha1 libtheora
           # Build libtheora
           cd ./dependencies/windows/libtheora/win32/VS2010
-          msbuild libtheora_static.sln /p:Configuration=Release /p:PlatformToolset=v143
+          msbuild libtheora_static.sln /p:Configuration=Release /p:PlatformToolset=v143 /p:WindowsTargetPlatformVersion=8.1
           cd ../../../../..
 
       - name: Download GLEW
@@ -102,6 +116,7 @@ jobs:
             /p:UapAppxPackageBuildMode=$env:BuildMode `
             /p:AppxBundle=$env:AppxBundle `
             /p:PlatformToolset=v143 `
+            /p:WindowsTargetPlatformVersion=8.1 `
             /p:PackageCertificateThumbprint="${{ env.THUMBPRINT }}" `
             /p:AppxPackageTestDir="${{ env.PackageOutputRootDir }}\${{ env.PACKAGE_NAME }}" `
             /p:ForceImportBeforeCppTargets="$env:GITHUB_WORKSPACE/props/winactions_x64.props" `
