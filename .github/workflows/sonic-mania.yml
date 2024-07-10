@@ -58,7 +58,7 @@ jobs:
           Expand-Archive -Path libvorbis.zip -DestinationPath ./dependencies/windows/
           Rename-Item ./dependencies/windows/libvorbis-1.3.7 libvorbis
           # Build libvorbis
-          cd ./dependencies/windows/libvorbis/win32/VS2015
+          cd ./dependencies/windows/libvorbis/win32/VS2010
           msbuild libvorbis.sln /p:Configuration=Release /p:PlatformToolset=v143 /p:WindowsTargetPlatformVersion=8.1
           cd ../../../../..
 
