@@ -24,23 +24,23 @@ jobs:
         choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System' -y
         choco install git -y
 
-    - name: Clone vcpkg and Sonic-Mania-Decompilation
+    - name: Setup vcpkg
+      uses: lukka/get-vcpkg@v11
+      with:
+        vcpkgArguments: 'install libtheora libogg --triplet=x64-windows-static'
+
+    - name: Clone Sonic-Mania-Decompilation
       run: |
-        if not exist vcpkg (
-          git clone https://github.com/microsoft/vcpkg
-          call .\vcpkg\bootstrap-vcpkg.bat
-        )
         if exist Sonic-Mania-Decompilation (
           cd Sonic-Mania-Decompilation
           git submodule update --init --recursive
           cd ..\
-        ) else (git clone --recursive https://github.com/RSDKModding/Sonic-Mania-Decompilation)
+        ) else (
+          git clone --recursive https://github.com/RSDKModding/Sonic-Mania-Decompilation
+        )
     
-    - name: Install Libraries with vcpkg
-      run: vcpkg\vcpkg.exe install libtheora libogg --triplet=x64-windows-static
-
     - name: Configure for compiling
-      run: cmake -B build -DCMAKE_TOOLCHAIN_FILE="../vcpkg/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET=x64-windows-static
+      run: cmake -B build -DCMAKE_TOOLCHAIN_FILE="${{ env.VCPKG_ROOT }}/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET=x64-windows-static
       working-directory: ./Sonic-Mania-Decompilation
 
     - name: Compile the game
