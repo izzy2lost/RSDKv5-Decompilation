@@ -63,11 +63,11 @@ jobs:
           cd ../../../../..
 
           # Download libtheora
-          Invoke-WebRequest -Uri "https://ftp.osuosl.org/pub/xiph/releases/theora/libtheora-1.2.0alpha1.zip" -OutFile "libtheora.zip"
+          Invoke-WebRequest -Uri "https://ftp.osuosl.org/pub/xiph/releases/theora/libtheora-1.1.1.zip" -OutFile "libtheora.zip"
           Expand-Archive -Path libtheora.zip -DestinationPath ./dependencies/windows/
-          Rename-Item ./dependencies/windows/libtheora-1.2.0alpha1 libtheora
+          Rename-Item ./dependencies/windows/libtheora-1.1.1 libtheora
           # Build libtheora
-          cd ./dependencies/windows/libtheora/win32/VS2010
+          cd ./dependencies/windows/libtheora/win32/VS2008
           msbuild libtheora_static.sln /p:Configuration=Release /p:PlatformToolset=v143 /p:WindowsTargetPlatformVersion=8.1
           cd ../../../../..
 
