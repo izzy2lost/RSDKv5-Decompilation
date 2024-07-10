@@ -42,7 +42,7 @@ jobs:
           Expand-Archive -Path libtheora.zip -DestinationPath ./dependencies/windows/
           Rename-Item ./dependencies/windows/libtheora-1.2.0alpha1 libtheora
           cd ./dependencies/windows/libtheora/win32/VS2010
-          msbuild libtheora_static.sln /p:Configuration=Release /p:PlatformToolset=v143 /p:WindowsTargetPlatformVersion=10.0 /p:AdditionalIncludeDirectories="..\..\libvorbis\include;..\..\libogg\include"
+          msbuild libtheora_static.sln /p:Configuration=Release /p:PlatformToolset=v143 /p:WindowsTargetPlatformVersion=10.0
           cd ../../../../..
 
       - name: Archive Built Libraries
