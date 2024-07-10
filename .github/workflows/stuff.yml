@@ -13,10 +13,16 @@ jobs:
     - name: Setup Visual Studio
       uses: microsoft/setup-msbuild@v1
 
+    - name: Install Chocolatey
+      run: |
+        Set-ExecutionPolicy Bypass -Scope Process -Force; 
+        [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; 
+        iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+
     - name: Install Dependencies
       run: |
-        winget install cmake
-        winget install git.git
+        choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System' -y
+        choco install git -y
 
     - name: Clone vcpkg and Sonic-Mania-Decompilation
       run: |
