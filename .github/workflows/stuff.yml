@@ -1,0 +1,59 @@
+name: Build Sonic Mania Decompilation
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Setup Visual Studio
+      uses: microsoft/setup-msbuild@v1
+
+    - name: Install Dependencies
+      run: |
+        winget install cmake
+        winget install git.git
+
+    - name: Clone vcpkg and Sonic-Mania-Decompilation
+      run: |
+        if not exist vcpkg (
+          git clone https://github.com/microsoft/vcpkg
+          call .\vcpkg\bootstrap-vcpkg.bat
+        )
+        if exist Sonic-Mania-Decompilation (
+          cd Sonic-Mania-Decompilation
+          git submodule update --init --recursive
+          cd ..\
+        ) else (git clone --recursive https://github.com/RSDKModding/Sonic-Mania-Decompilation)
+    
+    - name: Install Libraries with vcpkg
+      run: vcpkg\vcpkg.exe install libtheora libogg --triplet=x64-windows-static
+
+    - name: Configure for compiling
+      run: cmake -B build -DCMAKE_TOOLCHAIN_FILE="../vcpkg/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET=x64-windows-static
+      working-directory: ./Sonic-Mania-Decompilation
+
+    - name: Compile the game
+      run: cmake --build build --config release
+      working-directory: ./Sonic-Mania-Decompilation
+
+    - name: Prepare artifacts
+      run: |
+        mkdir DECOMP
+        copy TEMP/Sonic-Mania-Decompilation/build/dependencies/RSDKv5/Release/RSDKv5u.exe DECOMP/
+        copy TEMP/Sonic-Mania-Decompilation/build/dependencies/RSDKv5/Release/Game.dll DECOMP/
+        # Assume Data.rsdk or Data folder is already present in the repository or acquired elsewhere
+        # copy path/to/Data.rsdk DECOMP/ OR copy path/to/Data DECOMP/
+    
+    - name: Zip artifacts
+      run: powershell Compress-Archive -Path DECOMP/* -DestinationPath DECOMP.zip
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: sonic-mania-decompilation
+        path: DECOMP.zip
