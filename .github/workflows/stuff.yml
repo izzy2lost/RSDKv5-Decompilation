@@ -25,7 +25,7 @@ jobs:
         choco install git -y
 
     - name: Setup vcpkg
-      uses: lukka/get-vcpkg@v11
+      uses: lukka/get-vcpkg@v11.5
       with:
         vcpkgArguments: 'install libtheora libogg --triplet=x64-windows-static'
 
