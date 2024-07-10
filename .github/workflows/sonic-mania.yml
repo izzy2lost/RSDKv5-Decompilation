@@ -17,8 +17,6 @@ jobs:
     runs-on: windows-2022
 
     env:
-      VCPKG_ROOT: $(System.DefaultWorkingDirectory)/vcpkg
-      VCPKG_DEFAULT_TRIPLET: x64-windows-static
       SolutionPath: RSDKv5.sln
       Platform: x64
       Configuration: Release
@@ -31,45 +29,19 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v1
         with:
           submodules: recursive
 
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v1
 
-      - name: Install wget
-        run: choco install -y wget
-
-      - name: Install vcpkg
-        run: |
-          git clone https://github.com/microsoft/vcpkg.git
-          .\vcpkg\bootstrap-vcpkg.bat
-
-      - name: Install Dependencies using vcpkg
-        run: |
-          .\vcpkg\vcpkg.exe install libtheora libogg sdl2 --triplet=x64-windows-static
-
-      - name: Configure vcpkg integration
-        run: |
-          .\vcpkg\vcpkg integrate install
-          echo "VCPKG_ROOT=$env:GITHUB_WORKSPACE\\vcpkg" >> $env:GITHUB_ENV
-          echo "VCPKG_DEFAULT_TRIPLET=x64-windows-static" >> $env:GITHUB_ENV
-          echo "VCPKG_PATH=$env:GITHUB_WORKSPACE\\vcpkg\\installed\\x64-windows-static" >> $env:GITHUB_ENV
-
-      - name: Download Game.dll from Google Drive
-        run: |
-          wget -O Game.dll "https://drive.google.com/uc?export=download&id=1SZ-T1hrD9mYmnVNq8kxThS2RU1gCm-Sb"
-          New-Item -ItemType Directory -Force -Path "D:\a\RSDKv5-Decompilation\Sonic-Mania-Decompilation\build\x64\Release\Game"
-          Move-Item -Path "Game.dll" -Destination "D:\a\RSDKv5-Decompilation\Sonic-Mania-Decompilation\build\x64\Release\Game\Game.dll"
-        shell: pwsh
-
-      - name: Download ManiaTouchControls.dll from Google Drive
-        run: |
-          wget -O ManiaTouchControls.dll "https://drive.google.com/uc?export=download&id=1Sh-qQXAoYwEMKotbjSMRv7JmPuDVHIgp"
-          New-Item -ItemType Directory -Force -Path "D:\a\RSDKv5-Decompilation\RSDKv5-Example-Mods\ManiaTouchControls\build\x64\Release"
-          Move-Item -Path "ManiaTouchControls.dll" -Destination "D:\a\RSDKv5-Decompilation\RSDKv5-Example-Mods\ManiaTouchControls\build\x64\Release\ManiaTouchControls.dll"
-        shell: pwsh
+      - name: Setup MSYS2
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          update: true
+          install: pkg-config make mingw-w64-x86_64-gcc mingw-w64-x86_64-SDL2 mingw-w64-x86_64-libogg mingw-w64-x86_64-libtheora
 
       - name: Generate Self-Signed Certificate
         id: generate_cert
@@ -83,11 +55,8 @@ jobs:
         run: |
           echo "PACKAGE_NAME=${{ github.event.inputs.package_name }}_${{ github.event.inputs.tag_name }}" >> $GITHUB_ENV
 
-
       - name: App Build
         run: |
-          $SDL2_INCLUDE_DIR = "$env:GITHUB_WORKSPACE\dependencies\windows\SDL2\include"
-          $SDL2_LIB_DIR = "$env:GITHUB_WORKSPACE\dependencies\windows\SDL2\lib\x64"
           msbuild $env:SolutionPath -target:RSDKv5-UWP `
             /p:Platform=$env:Platform `
             /p:Configuration=$env:Configuration `
@@ -97,10 +66,6 @@ jobs:
             /p:AppxPackageTestDir="${{ env.PackageOutputRootDir }}\${{ env.PACKAGE_NAME }}" `
             /p:ForceImportBeforeCppTargets="$env:GITHUB_WORKSPACE/props/winactions_x64.props" `
             /p:RestorePackagesConfig=true `
-            /p:SDL2IncludeDir="$SDL2_INCLUDE_DIR" `
-            /p:SDL2LibDir="$SDL2_LIB_DIR" `
-            /p:AdditionalLibraryDirectories="$SDL2_LIB_DIR" `
-            /p:AdditionalDependencies="SDL2.lib" `
             /restore
         shell: pwsh
 
