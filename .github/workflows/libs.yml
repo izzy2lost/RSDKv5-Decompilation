@@ -11,14 +11,14 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v2
 
-      - name: Install MinGW-w64
+      - name: Install MinGW-w64 and wget
         run: |
           choco install mingw -y
+          choco install wget -y
           Import-Module "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1"
 
       - name: Add MinGW to PATH
-        shell: bash
-        run: echo 'C:\tools\mingw64\bin' >> $GITHUB_PATH
+        run: echo 'C:\tools\mingw64\bin' >> $env:GITHUB_PATH
 
       - name: Download and Setup libogg
         shell: bash
