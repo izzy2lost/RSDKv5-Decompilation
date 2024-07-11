@@ -17,6 +17,8 @@ jobs:
     runs-on: windows-2022
 
     env:
+      VCPKG_ROOT: $(System.DefaultWorkingDirectory)/vcpkg
+      VCPKG_DEFAULT_TRIPLET: x64-windows-static
       SolutionPath: RSDKv5.sln
       Platform: x64
       Configuration: Release
@@ -34,56 +36,44 @@ jobs:
           submodules: recursive
 
       - name: Setup MSBuild
-        uses: microsoft/setup-msbuild@v2
-      
-      - name: Install Windows 8.1 SDK
-        run: |
-          choco install visualstudio2019buildtools -y
-          choco install visualstudio2019-workload-vctools -y
-          choco install windows-sdk-8.1 -y
+        uses: microsoft/setup-msbuild@v1
 
-      - name: Download and Setup Dependencies
+      - name: Install wget
+        run: choco install -y wget
+
+      - name: Install vcpkg
         run: |
-          # Download libogg
-          Invoke-WebRequest -Uri "https://downloads.xiph.org/releases/ogg/libogg-1.3.5.zip" -OutFile "libogg.zip"
-          Expand-Archive -Path libogg.zip -DestinationPath ./dependencies/windows/
-          Rename-Item ./dependencies/windows/libogg-1.3.5 libogg
-          # Build libogg
-          cd ./dependencies/windows/libogg/win32/VS2015
-          msbuild libogg.sln /p:Configuration=Release /p:PlatformToolset=v143 /p:WindowsTargetPlatformVersion=8.1
-          cd ../../../../..
+          git clone https://github.com/microsoft/vcpkg.git
+          .\vcpkg\bootstrap-vcpkg.bat
           
-          # Download libtheora
-          Invoke-WebRequest -Uri "https://ftp.osuosl.org/pub/xiph/releases/theora/libtheora-1.2.0alpha1.zip" -OutFile "libtheora.zip"
-          Expand-Archive -Path libtheora.zip -DestinationPath ./dependencies/windows/
-          Rename-Item ./dependencies/windows/libtheora-1.2.0alpha1 libtheora
-          # Build libtheora
-          cd ./dependencies/windows/libtheora/win32/VS2010
-          msbuild libtheora_static.sln /p:Configuration=Release /p:PlatformToolset=v143 /p:WindowsTargetPlatformVersion=8.1
-          cd ../../../../..
-
-      - name: Download GLEW
+      - name: Install Dependencies using vcpkg
         run: |
-          Invoke-WebRequest -Uri "https://github.com/nigels-com/glew/releases/download/glew-2.2.0/glew-2.2.0-win32.zip" -OutFile "GLEW.zip"
-          Expand-Archive -Path GLEW.zip -DestinationPath ./dependencies/windows/
-          Rename-Item ./dependencies/windows/glew-2.2.0 glew
-
-      - name: Download SDL2
+          .\vcpkg\vcpkg.exe install libtheora libogg sdl2 --triplet=x64-windows-static
+          
+      - name: Configure vcpkg integration
         run: |
-          Invoke-WebRequest -Uri "https://libsdl.org/release/SDL2-devel-2.28.5-VC.zip" -OutFile "SDL2.zip"
-          Expand-Archive -Path SDL2.zip -DestinationPath ./dependencies/windows/
-          Rename-Item ./dependencies/windows/SDL2-2.28.5 SDL2
+          .\vcpkg\vcpkg integrate install
+          echo "VCPKG_ROOT=$env:GITHUB_WORKSPACE\\vcpkg" >> $env:GITHUB_ENV
+          echo "VCPKG_DEFAULT_TRIPLET=x64-windows-static" >> $env:GITHUB_ENV
+          echo "VCPKG_PATH=$env:GITHUB_WORKSPACE\\vcpkg\\installed\\x64-windows-static" >> $env:GITHUB_ENV
+
+      - name: Download SDL.zip from Google Drive
+        run: |
+          wget -O SDL.zip "https://drive.google.com/uc?export=download&id=1VhIYeCKl3o_gFCn-HwMOXTKBgh8ARLTo"
+          New-Item -ItemType Directory -Force -Path "dependencies/windows"
+          tar -xf SDL.zip -C dependencies/windows
+        shell: pwsh
 
       - name: Download Game.dll from Google Drive
         run: |
-          Invoke-WebRequest -Uri "https://drive.google.com/uc?export=download&id=1SZ-T1hrD9mYmnVNq8kxThS2RU1gCm-Sb" -OutFile "Game.dll"
+          wget -O Game.dll "https://drive.google.com/uc?export=download&id=1SZ-T1hrD9mYmnVNq8kxThS2RU1gCm-Sb"
           New-Item -ItemType Directory -Force -Path "D:\a\RSDKv5-Decompilation\Sonic-Mania-Decompilation\build\x64\Release\Game"
           Move-Item -Path "Game.dll" -Destination "D:\a\RSDKv5-Decompilation\Sonic-Mania-Decompilation\build\x64\Release\Game\Game.dll"
         shell: pwsh
 
       - name: Download ManiaTouchControls.dll from Google Drive
         run: |
-          Invoke-WebRequest -Uri "https://drive.google.com/uc?export=download&id=1Sh-qQXAoYwEMKotbjSMRv7JmPuDVHIgp" -OutFile "ManiaTouchControls.dll"
+          wget -O ManiaTouchControls.dll "https://drive.google.com/uc?export=download&id=1Sh-qQXAoYwEMKotbjSMRv7JmPuDVHIgp"
           New-Item -ItemType Directory -Force -Path "D:\a\RSDKv5-Decompilation\RSDKv5-Example-Mods\ManiaTouchControls\build\x64\Release"
           Move-Item -Path "ManiaTouchControls.dll" -Destination "D:\a\RSDKv5-Decompilation\RSDKv5-Example-Mods\ManiaTouchControls\build\x64\Release\ManiaTouchControls.dll"
         shell: pwsh
@@ -107,28 +97,9 @@ jobs:
             /p:Configuration=$env:Configuration `
             /p:UapAppxPackageBuildMode=$env:BuildMode `
             /p:AppxBundle=$env:AppxBundle `
-            /p:PlatformToolset=v143 `
-            /p:WindowsTargetPlatformVersion=8.1 `
             /p:PackageCertificateThumbprint="${{ env.THUMBPRINT }}" `
             /p:AppxPackageTestDir="${{ env.PackageOutputRootDir }}\${{ env.PACKAGE_NAME }}" `
             /p:ForceImportBeforeCppTargets="$env:GITHUB_WORKSPACE/props/winactions_x64.props" `
             /p:RestorePackagesConfig=true `
             /restore
         shell: pwsh
-
-      - name: Prepare artifacts
-        run: |
-          mkdir DECOMP
-          copy TEMP/Sonic-Mania-Decompilation/build/dependencies/RSDKv5/Release/RSDKv5u.exe DECOMP/
-          copy TEMP/Sonic-Mania-Decompilation/build/dependencies/RSDKv5/Release/Game.dll DECOMP/
-          # Assume Data.rsdk or Data folder is already present in the repository or acquired elsewhere
-          # copy path/to/Data.rsdk DECOMP/ OR copy path/to/Data DECOMP/
-
-      - name: Zip artifacts
-        run: powershell Compress-Archive -Path DECOMP/* -DestinationPath DECOMP.zip
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: sonic-mania-decompilation
-          path: DECOMP.zip
