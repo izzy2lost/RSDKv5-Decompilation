@@ -28,8 +28,7 @@ jobs:
           cd ../../../../..
 
       - name: List libogg directory contents
-        run: |
-          Get-ChildItem -Path dependencies/windows/libogg -Recurse
+        run: Get-ChildItem -Path dependencies/windows/libogg -Recurse
 
       - name: Move libogg output
         run: |
@@ -46,8 +45,7 @@ jobs:
           cd ../../../../../..
 
       - name: List libvorbis directory contents
-        run: |
-          Get-ChildItem -Path dependencies/windows/libvorbis -Recurse
+        run: Get-ChildItem -Path dependencies/windows/libvorbis -Recurse
 
       - name: Move libvorbis output
         run: |
@@ -64,8 +62,7 @@ jobs:
           cd ../../../../..
 
       - name: List libtheora directory contents
-        run: |
-          Get-ChildItem -Path dependencies/windows/libtheora -Recurse
+        run: Get-ChildItem -Path dependencies/windows/libtheora -Recurse
 
       - name: Archive Built Libraries
         run: |
