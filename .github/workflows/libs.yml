@@ -27,6 +27,10 @@ jobs:
           msbuild libogg.sln /p:Configuration=Release /p:PlatformToolset=v143 /p:WindowsTargetPlatformVersion=10.0
           cd ../../../../..
 
+      - name: List libogg directory contents
+        run: |
+          Get-ChildItem -Path dependencies/windows/libogg -Recurse
+
       - name: Move libogg output
         run: |
           New-Item -ItemType Directory -Path dependencies/windows/libogg/lib -Force
@@ -41,6 +45,10 @@ jobs:
           msbuild libvorbis_static.vcxproj /p:Configuration=Release /p:PlatformToolset=v143 /p:WindowsTargetPlatformVersion=10.0
           cd ../../../../../..
 
+      - name: List libvorbis directory contents
+        run: |
+          Get-ChildItem -Path dependencies/windows/libvorbis -Recurse
+
       - name: Move libvorbis output
         run: |
           New-Item -ItemType Directory -Path dependencies/windows/libvorbis/lib -Force
@@ -54,6 +62,10 @@ jobs:
           cd ./dependencies/windows/libtheora/win32/VS2010
           msbuild libtheora_static.sln /p:Configuration=Release /p:PlatformToolset=v143 /p:WindowsTargetPlatformVersion=10.0
           cd ../../../../..
+
+      - name: List libtheora directory contents
+        run: |
+          Get-ChildItem -Path dependencies/windows/libtheora -Recurse
 
       - name: Archive Built Libraries
         run: |
