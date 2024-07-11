@@ -29,8 +29,8 @@ jobs:
 
       - name: Move libogg output
         run: |
-          New-Item -ItemType Directory -Path dependencies/windows/libogg/lib
-          xcopy dependencies/windows/libogg/win32/VS2015/Release/*.lib dependencies/windows/libogg/lib/
+          New-Item -ItemType Directory -Path dependencies/windows/libogg/lib -Force
+          Copy-Item -Path dependencies/windows/libogg/win32/VS2015/Release/*.lib -Destination dependencies/windows/libogg/lib/
 
       - name: Download and Setup libvorbis
         run: |
@@ -43,8 +43,8 @@ jobs:
 
       - name: Move libvorbis output
         run: |
-          New-Item -ItemType Directory -Path dependencies/windows/libvorbis/lib
-          xcopy dependencies/windows/libvorbis/win32/VS2010/libvorbis/Release/*.lib dependencies/windows/libvorbis/lib/
+          New-Item -ItemType Directory -Path dependencies/windows/libvorbis/lib -Force
+          Copy-Item -Path dependencies/windows/libvorbis/win32/VS2010/libvorbis/Release/*.lib -Destination dependencies/windows/libvorbis/lib/
 
       - name: Download and Setup libtheora
         run: |
@@ -57,10 +57,10 @@ jobs:
 
       - name: Archive Built Libraries
         run: |
-          New-Item -ItemType Directory -Path built_libraries
-          xcopy dependencies/windows/libogg/lib/*.lib built_libraries/
-          xcopy dependencies/windows/libvorbis/lib/*.lib built_libraries/
-          xcopy dependencies/windows/libtheora/win32/VS2010/Release/*.lib built_libraries/
+          New-Item -ItemType Directory -Path built_libraries -Force
+          Copy-Item -Path dependencies/windows/libogg/lib/*.lib -Destination built_libraries/
+          Copy-Item -Path dependencies/windows/libvorbis/lib/*.lib -Destination built_libraries/
+          Copy-Item -Path dependencies/windows/libtheora/win32/VS2010/Release/*.lib -Destination built_libraries/
           powershell Compress-Archive -Path built_libraries/* -DestinationPath built_libraries.zip
 
       - name: Upload Built Libraries
