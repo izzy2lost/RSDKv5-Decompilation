@@ -17,7 +17,7 @@ jobs:
       - name: Update MSYS2 and install dependencies
         run: |
           C:\tools\msys64\usr\bin\bash -lc "pacman -Syuu --noconfirm"
-          C:\tools\msys64\usr\bin\bash -lc "pacman -S --noconfirm mingw-w64-x86_64-gcc mingw-w64-x86_64-pkg-config mingw-w64-x86_64-make wget"
+          C:\tools\msys64\usr\bin\bash -lc "pacman -S --noconfirm mingw-w64-x86_64-gcc mingw-w64-x86_64-pkg-config mingw-w64-x86_64-make wget unzip"
 
       - name: Download and Setup libogg
         run: |
