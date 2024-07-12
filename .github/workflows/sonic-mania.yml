@@ -17,8 +17,6 @@ jobs:
     runs-on: windows-2022
 
     env:
-      VCPKG_ROOT: $(System.DefaultWorkingDirectory)/vcpkg
-      VCPKG_DEFAULT_TRIPLET: x64-windows-static
       SolutionPath: RSDKv5.sln
       Platform: x64
       Configuration: Release
