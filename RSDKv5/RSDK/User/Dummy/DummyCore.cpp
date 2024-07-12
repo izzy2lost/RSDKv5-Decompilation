@@ -1,4 +1,107 @@
+#include "DummyCore.hpp"
+
 #if RETRO_REV02
+
+DummyCore::DummyCore()
+{
+    // Plus features enabled
+    values[0]  = true;
+    valueCount = 1;
+}
+
+void DummyCore::StageLoad()
+{
+    UserCore::StageLoad();
+
+    for (int32 v = 0; v < valueCount; ++v)
+        AddViewableVariable(userValueNames[v], &values[v], VIEWVAR_BOOL, false, true);
+}
+
+bool32 DummyCore::CheckFocusLost() { return focusState != 0; }
+
+int32 DummyCore::GetUserLanguage() { return GetAPIValue(GetAPIValueID("SYSTEM_LANGUAGE", 0)); }
+int32 DummyCore::GetUserRegion() { return GetAPIValue(GetAPIValueID("SYSTEM_REGION", 0)); }
+int32 DummyCore::GetUserPlatform() { return GetAPIValue(GetAPIValueID("SYSTEM_PLATFORM", 0)); }
+bool32 DummyCore::GetConfirmButtonFlip() { return GetAPIValue(GetAPIValueID("SYSTEM_CONFIRM_FLIP", 0)); }
+
+void DummyCore::LaunchManual()
+{
+#if RETRO_RENDERDEVICE_SDL2 || RETRO_AUDIODEVICE_SDL2 || RETRO_INPUTDEVICE_SDL2
+    SDL_OpenURL("http://www.sonicthehedgehog.com/mania/manual");
+#else
+    PrintLog(PRINT_NORMAL, "EMPTY LaunchManual()");
+#endif
+}
+
+void DummyCore::ExitGame()
+{
+    RenderDevice::isRunning = false;
+}
+
+int32 DummyCore::GetDefaultGamepadType()
+{
+#if RETRO_REV02
+    int32 platform = curSKU.platform;
+#else
+    int32 platform = gameVerInfo.platform;
+#endif
+
+    switch (platform) {
+        case PLATFORM_SWITCH:
+#if RETRO_INPUTDEVICE_NX
+            return currentNXControllerType;
+#else
+            return (DEVICE_API_NONE << 16) | (DEVICE_TYPE_CONTROLLER << 8) | (DEVICE_SWITCH_HANDHELD << 0);
+#endif
+
+        default:
+        case PLATFORM_PS4:
+        case PLATFORM_XB1:
+        case PLATFORM_PC:
+        case PLATFORM_DEV: return (DEVICE_API_NONE << 16) | (DEVICE_TYPE_CONTROLLER << 8) | (0 << 0); break;
+    }
+}
+
+#if RETRO_VER_EGS
+bool32 DummyCore::CanShowExtensionOverlay(int32 overlay)
+{
+    PrintLog(PRINT_POPUP, "Can Show Extension Overlay?: %d", overlay);
+    return true;
+}
+bool32 DummyCore::ShowExtensionOverlay(int32 overlay)
+{
+    PrintLog(PRINT_POPUP, "Show Extension Overlay: %d", overlay);
+    return true;
+}
+bool32 DummyCore::CanShowAltExtensionOverlay(int32 overlay)
+{
+    PrintLog(PRINT_POPUP, "Can Show Alternate Extension Overlay?: %d", overlay);
+    return false;
+}
+bool32 DummyCore::ShowAltExtensionOverlay(int32 overlay)
+{
+    PrintLog(PRINT_POPUP, "Show Alternate Extension Overlay: %d", overlay);
+    return ShowExtensionOverlay(overlay);
+}
+int32 DummyCore::GetConnectingStringID() { return -1; }
+bool32 DummyCore::ShowLimitedVideoOptions(int32 id)
+{
+    PrintLog(PRINT_POPUP, "Show Limited Video Options?");
+    return false;
+}
+void DummyCore::InitInputDevices() {}
+#else
+bool32 DummyCore::ShowExtensionOverlay(int32 overlay)
+{
+    switch (overlay) {
+        default: PrintLog(PRINT_POPUP, "Show Unknown Extension Overlay: %d", overlay); break;
+        case 0: PrintLog(PRINT_POPUP, "Show Extension Overlay: %d (Plus Upsell Screen)", overlay); break;
+    }
+
+    return false;
+}
+#endif
+
 DummyCore *dummyCore = NULL;
 
 uint32 GetAPIValueID(const char *identifier, int32 charIndex)
@@ -58,7 +161,7 @@ int32 GetAPIValue(uint32 id)
 
 DummyCore *InitDummyCore()
 {
-    // Initalize API subsystems
+    // Initialize API subsystems
     DummyCore *core = new DummyCore;
 
     if (achievements)
@@ -84,64 +187,4 @@ DummyCore *InitDummyCore()
     return core;
 }
 
-#endif
-
-#if RETRO_REV02
-const char *userValueNames[8] = { "Ext <PLUS>" };
-void DummyCore::StageLoad()
-{
-    UserCore::StageLoad();
-
-#ifndef RSDK_AUTOBUILD
-    for (int32 v = 0; v < valueCount; ++v) AddViewableVariable(userValueNames[v], &values[v], VIEWVAR_BOOL, false, true);
-#else
-    // disable plus on autobuilds
-    for (int32 v = 0; v < valueCount; ++v) values[v] = false;
-#endif
-}
-
-bool32 DummyCore::CheckFocusLost() { return focusState != 0; }
-
-int32 DummyCore::GetUserLanguage() { return GetAPIValue(GetAPIValueID("SYSTEM_LANGUAGE", 0)); }
-int32 DummyCore::GetUserRegion() { return GetAPIValue(GetAPIValueID("SYSTEM_REGION", 0)); }
-int32 DummyCore::GetUserPlatform() { return GetAPIValue(GetAPIValueID("SYSTEM_PLATFORM", 0)); }
-bool32 DummyCore::GetConfirmButtonFlip() { return GetAPIValue(GetAPIValueID("SYSTEM_CONFIRM_FLIP", 0)); }
-
-void DummyCore::LaunchManual()
-{
-    // LaunchManual() just opens the mania manual URL, thats it
-#if RETRO_RENDERDEVICE_SDL2 || RETRO_AUDIODEVICE_SDL2 || RETRO_INPUTDEVICE_SDL2
-    SDL_OpenURL("http://www.sonicthehedgehog.com/mania/manual");
-#else
-    PrintLog(PRINT_NORMAL, "EMPTY LaunchManual()");
-#endif
-}
-void DummyCore::ExitGame()
-{
-    RenderDevice::isRunning = false;
-}
-
-int32 DummyCore::GetDefaultGamepadType()
-{
-#if RETRO_REV02
-    int32 platform = curSKU.platform;
-#else
-    int32 platform = gameVerInfo.platform;
-#endif
-
-    switch (platform) {
-        case PLATFORM_SWITCH:
-#if RETRO_INPUTDEVICE_NX
-            return currentNXControllerType;
-#else
-            return (DEVICE_API_NONE << 16) | (DEVICE_TYPE_CONTROLLER << 8) | (DEVICE_SWITCH_HANDHELD << 0);
-#endif
-
-        default:
-        case PLATFORM_PS4:
-        case PLATFORM_XB1:
-        case PLATFORM_PC:
-        case PLATFORM_DEV: return (DEVICE_API_NONE << 16) | (DEVICE_TYPE_CONTROLLER << 8) | (0 << 0); break;
-    }
-}
-#endif
+#endif // RETRO_REV02
