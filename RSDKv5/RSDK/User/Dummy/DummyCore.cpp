@@ -1,4 +1,4 @@
-
+#if RETRO_REV02
 DummyCore *dummyCore = NULL;
 
 uint32 GetAPIValueID(const char *identifier, int32 charIndex)
