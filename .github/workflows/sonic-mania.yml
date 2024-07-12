@@ -48,7 +48,7 @@ jobs:
           
       - name: Install Dependencies using vcpkg
         run: |
-          .\vcpkg\vcpkg.exe install libtheora libogg sdl2 --triplet=x64-windows-static
+          .\vcpkg\vcpkg.exe install libogg sdl2 --triplet=x64-windows-static
           
       - name: Configure vcpkg integration
         run: |
@@ -89,6 +89,24 @@ jobs:
         id: set_package_name
         run: |
           echo "PACKAGE_NAME=${{ github.event.inputs.package_name }}_${{ github.event.inputs.tag_name }}" >> $GITHUB_ENV
+
+      - name: Build Theora (Static)
+        run: |
+          @echo off
+          echo ---+++--- Building Theora (Static) ---+++---
+          if .%SRCROOT%==. set SRCROOT=D:\xiph
+          set OLDPATH=%PATH%
+          set OLDINCLUDE=%INCLUDE%
+          set OLDLIB=%LIB%
+          call "c:\program files\microsoft visual studio\vc98\bin\vcvars32.bat"
+          echo Setting include paths for Theora
+          set INCLUDE=%INCLUDE%;%SRCROOT%\ogg\include;%SRCROOT%\theora\include
+          echo Compiling...
+          msdev theora_static.dsp /useenv /make "theora_static - Win32 Release" /rebuild
+          set PATH=%OLDPATH%
+          set INCLUDE=%OLDINCLUDE%
+          set LIB=%OLDLIB%
+        shell: cmd
 
       - name: App Build
         run: |
