@@ -122,7 +122,7 @@ jobs:
             /p:AppxPackageTestDir="${{ env.PackageOutputRootDir }}\${{ env.PACKAGE_NAME }}" `
             /p:ForceImportBeforeCppTargets="$env:GITHUB_WORKSPACE/props/winactions_x64.props" `
             /p:RestorePackagesConfig=true `
-            /p:AdditionalLibraryDirectories="dependencies/windows/SDL2/lib/x64" `
-            /p:AdditionalDependencies="SDL2.lib" `
+            /p:AdditionalLibraryDirectories="dependencies/windows/SDL2/SDL2/lib" `
+            /p:AdditionalDependencies="SDL2.lib;SDL2main.lib"`
             /restore
         shell: pwsh
