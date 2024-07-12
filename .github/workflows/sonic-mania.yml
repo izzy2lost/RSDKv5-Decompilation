@@ -48,7 +48,7 @@ jobs:
       - name: Build libvorbis
         run: |
           cd dependencies/windows/libvorbis/win32/VS2010
-          msbuild libvorbis_static.sln /p:Configuration=Release /p:PlatformToolset=v143 /p:WindowsTargetPlatformVersion=10.0
+          msbuild vorbis_static.sln /p:Configuration=Release /p:PlatformToolset=v143 /p:WindowsTargetPlatformVersion=10.0
         shell: pwsh
 
       - name: Apply patch to libtheora
