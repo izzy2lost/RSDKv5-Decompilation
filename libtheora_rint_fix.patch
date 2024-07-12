@@ -11,4 +11,4 @@ index d6f5c58..e5d66ff 100644
 +#endif
  
  #define OC_THEORA 0
- #define OC_VP3    1
+ #define OC_VP3 1
