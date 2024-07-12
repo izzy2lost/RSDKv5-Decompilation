@@ -48,19 +48,18 @@ jobs:
       - name: Build libvorbis
         run: |
           cd dependencies/windows/libvorbis/win32/VS2010
-          msbuild libvorbis/libvorbis_static.vcxproj /p:Configuration=Release /p:PlatformToolset=v143 /p:WindowsTargetPlatformVersion=10.0
+          msbuild libvorbis_static.sln /p:Configuration=Release /p:PlatformToolset=v143 /p:WindowsTargetPlatformVersion=10.0
         shell: pwsh
 
-      - name: Apply patch to libtheora
+      - name: Clone libtheora-uwp repository
         run: |
-         cd dependencies/windows/libtheora
-         git apply ../../../libtheora_rint_fix.patch
+          git clone https://github.com/ahrnbom/libtheora-uwp.git dependencies/windows/libtheora-uwp
         shell: pwsh
 
-      - name: Build libtheora
+      - name: Build libtheora for UWP
         run: |
-          cd dependencies/windows/libtheora/win32/VS2010
-          msbuild libtheora_static.sln /p:Configuration=Release /p:PlatformToolset=v143 /p:WindowsTargetPlatformVersion=10.0
+          cd dependencies/windows/libtheora-uwp/winrt/libtheora-uwp
+          msbuild libtheora-uwp.sln /p:Configuration=Release /p:PlatformToolset=v143 /p:WindowsTargetPlatformVersion=10.0
         shell: pwsh
 
       - name: Download SDL.zip from Google Drive
@@ -96,6 +95,7 @@ jobs:
         id: set_package_name
         run: |
           echo "PACKAGE_NAME=${{ github.event.inputs.package_name }}_${{ github.event.inputs.tag_name }}" >> $GITHUB_ENV
+
       - name: App Build
         run: |
           msbuild $env:SolutionPath -target:RSDKv5-UWP `
