@@ -72,12 +72,12 @@ jobs:
           msbuild libtheora-uwp.sln /p:Configuration=Release /p:PlatformToolset=v143 /p:WindowsTargetPlatformVersion=10.0
         shell: pwsh
 
-      - name: Download SDL.zip from Google Drive
+      - name: Download SDL2.zip from Google Drive
         run: |
-          wget -O SDL.zip "https://drive.google.com/uc?export=download&id=1VhIYeCKl3o_gFCn-HwMOXTKBgh8ARLTo"
+          wget -O SDL2.zip "https://drive.google.com/uc?export=download&id=1VhIYeCKl3o_gFCn-HwMOXTKBgh8ARLTo"
           New-Item -ItemType Directory -Force -Path "dependencies/windows"
           Add-Type -AssemblyName System.IO.Compression.FileSystem
-          [System.IO.Compression.ZipFile]::ExtractToDirectory('SDL.zip', 'dependencies/windows')
+          [System.IO.Compression.ZipFile]::ExtractToDirectory('SDL2.zip', 'dependencies/windows')
         shell: pwsh
 
       - name: Download Game.dll from Google Drive
