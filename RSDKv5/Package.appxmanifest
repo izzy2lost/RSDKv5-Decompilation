@@ -1,27 +1,26 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" IgnorableNamespaces="uap mp">
-  <Identity
-    Name="453aba0f-8dc8-459d-b7c8-9b6ed18e27b0"
-    Publisher="CN=Wan Kerr Co. Ltd."
-    Version="1.4.0.0" />
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<Package IgnorableNamespaces="uap mp build" xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" xmlns:build="http://schemas.microsoft.com/developer/appx/2015/build">
+  
+  <Identity Name="453aba0f-8dc8-459d-b7c8-9b6ed18e27b0" Publisher="CN=Wan Kerr Co. Ltd." Version="1.4.0.0" ProcessorArchitecture="x64"/>
   <mp:PhoneIdentity PhoneProductId="453aba0f-8dc8-459d-b7c8-9b6ed18e27b0" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
   <Properties>
-    <DisplayName>RSDKv5</DisplayName>
+    <DisplayName>Sonic Mania</DisplayName>
     <PublisherDisplayName>SEGA</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
   <Dependencies>
-    <TargetDeviceFamily Name="Windows.Universal" MinVersion="10.0.0.0" MaxVersionTested="10.0.0.0" />
+    <TargetDeviceFamily Name="Windows.Universal" MinVersion="10.0.10240.0" MaxVersionTested="10.0.19041.0"/>
     <PackageDependency Name="Microsoft.VCLibs.140.00" MinVersion="14.0.30704.0" Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US"/>
   </Dependencies>
   <Resources>
-    <Resource Language="x-generate" />
+    <Resource Language="EN-US"/>
+    <Resource uap:Scale="200"/>
+    
   </Resources>
   <Applications>
-    <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="RSDKv5_UWP.App">
-      <uap:VisualElements DisplayName="RSDKv5" Description="A complete decompilation of Retro Engine (v5)"
-        Square150x150Logo="Assets\Square150x150Logo.png" Square44x44Logo="Assets\Square44x44Logo.png" BackgroundColor="transparent">
-        <uap:SplashScreen Image="Assets\SplashScreen.png"  BackgroundColor="#000000"/>
+    <Application Id="App" Executable="RSDKv5.UWP.exe" EntryPoint="RSDKv5_UWP.App">
+      <uap:VisualElements DisplayName="Sonic Mania" Description="A complete decompilation of  Retro Engine (v5)" Square150x150Logo="Assets\Square150x150Logo.png" Square44x44Logo="Assets\Square44x44Logo.png" BackgroundColor="transparent">
+        <uap:SplashScreen Image="Assets\SplashScreen.png" BackgroundColor="#000000"/>
         <uap:DefaultTile Square71x71Logo="Assets\SmallTile.png" Square310x310Logo="Assets\LargeTile.png" Wide310x150Logo="Assets\WideTile.png" ShortName="RSDKv5">
           <uap:ShowNameOnTiles>
             <uap:ShowOn Tile="square150x150Logo"/>
@@ -37,6 +36,18 @@
     </Application>
   </Applications>
   <Capabilities>
-    <Capability Name="internetClient" />
+    <Capability Name="internetClient"/>
   </Capabilities>
+  <build:Metadata>
+    <build:Item Name="cl.exe" Version="19.33.31630.0"/>
+    <build:Item Name="VisualStudio" Version="17.0"/>
+    <build:Item Name="VisualStudioEdition" Value="Microsoft Visual Studio Community 2022"/>
+    <build:Item Name="OperatingSystem" Version="10.0.25219.1001 (WinBuild.160101.0800)"/>
+    <build:Item Name="Microsoft.Build.AppxPackage.dll" Version="17.3.32728.75"/>
+    <build:Item Name="ProjectGUID" Value="{5ecc2adb-a0f6-48c0-9861-0f2c5f9f244b}"/>
+    <build:Item Name="OptimizingToolset" Value="None"/>
+    <build:Item Name="TargetRuntime" Value="Native"/>
+    <build:Item Name="Microsoft.Windows.UI.Xaml.Build.Tasks.dll" Version="17.0.32728.75"/>
+    <build:Item Name="MakePri.exe" Version="10.0.19041.685 (WinBuild.160101.0800)"/>
+  </build:Metadata>
 </Package>
