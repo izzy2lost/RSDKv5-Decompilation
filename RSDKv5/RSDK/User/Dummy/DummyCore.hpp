@@ -5,6 +5,8 @@
 
 #if RETRO_REV02
 
+const char *userValueNames[8] = { "Ext <PLUS>" };  // Add this line to ensure userValueNames is declared
+
 struct DummyCore : UserCore {
     DummyCore();
 
