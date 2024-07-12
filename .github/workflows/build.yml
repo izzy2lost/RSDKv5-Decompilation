@@ -22,7 +22,7 @@ jobs:
       - name: Build libogg for UWP
         run: |
           cd dependencies/windows/libogg-uwp/winrt/libogg-uwp
-          msbuild libogg-uwp.sln /p:Configuration=Release /p:PlatformToolset=v143 /p:WindowsTargetPlatformVersion=10.0
+          msbuild libogg-uwp.sln /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v143 /p:WindowsTargetPlatformVersion=10.0
         shell: pwsh
 
       - name: List libogg output
@@ -38,7 +38,7 @@ jobs:
       - name: Build libvorbis for UWP
         run: |
           cd dependencies/windows/libvorbis-uwp/winrt/libvorbis-uwp
-          msbuild libvorbis-uwp.sln /p:Configuration=Release /p:PlatformToolset=v143 /p:WindowsTargetPlatformVersion=10.0
+          msbuild libvorbis-uwp.sln /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v143 /p:WindowsTargetPlatformVersion=10.0
         shell: pwsh
 
       - name: List libvorbis output
@@ -54,7 +54,7 @@ jobs:
       - name: Build libtheora for UWP
         run: |
           cd dependencies/windows/libtheora-uwp/winrt/libtheora-uwp
-          msbuild libtheora-uwp.sln /p:Configuration=Release /p:PlatformToolset=v143 /p:WindowsTargetPlatformVersion=10.0
+          msbuild libtheora-uwp.sln /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v143 /p:WindowsTargetPlatformVersion=10.0
         shell: pwsh
 
       - name: List libtheora output
