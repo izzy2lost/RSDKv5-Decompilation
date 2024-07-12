@@ -1,12 +1,14 @@
 diff --git a/examples/encoder_example.c b/examples/encoder_example.c
-index d6f5c58..e5d66ff 100644
+index d6f5c58..f15b23e 100644
 --- a/examples/encoder_example.c
 +++ b/examples/encoder_example.c
-@@ -53,7 +53,9 @@
+@@ -53,7 +53,11 @@
  #include <string.h>
  #include <ctype.h>
  
-+#ifndef _MSC_VER
++#ifdef _MSC_VER
++#include <math.h>
++#else
  extern double rint(double _x);
 +#endif
  
