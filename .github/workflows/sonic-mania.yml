@@ -55,9 +55,9 @@ jobs:
       - name: Download libogg.lib from Google Drive
         run: |
          wget -O libogg.lib "https://drive.google.com/uc?export=download&id=1WcmhUFeLA3HRRHGjBr8ryycN606zxZcR"
-         New-Item -ItemType Directory -Force -Path "build/x64/Release"
-         Move-Item -Path "libogg.lib" -Destination "build/x64/Release/libogg.lib"
-         Get-ChildItem -Path "build/x64/Release" -Recurse
+         New-Item -ItemType Directory -Force -Path "dependencies/windows/libogg/release/x64"
+         Move-Item -Path "libogg.lib" -Destination "dependencies/windows/libogg/release/x64/libogg.lib"
+         Get-ChildItem -Path "dependencies/windows/libogg/release/x64" -Recurse
         shell: pwsh
 
       - name: Download Game.dll from Google Drive
