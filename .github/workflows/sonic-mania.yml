@@ -48,13 +48,19 @@ jobs:
       - name: Build libvorbis
         run: |
           cd dependencies/windows/libvorbis/win32/VS2010
-          msbuild libvorbis/libvorbis_static.vcxproj /p:Configuration=Release /p:PlatformToolset=v143 /p:WindowsTargetPlatformVersion=10.0
+          msbuild libvorbis_static.sln /p:Configuration=Release /p:PlatformToolset=v143 /p:WindowsTargetPlatformVersion=10.0
+        shell: pwsh
+
+      - name: Apply patch to libtheora
+        run: |
+          cd dependencies/windows/libtheora
+          git apply ../../../libtheora_rint_fix.patch
         shell: pwsh
 
       - name: Build libtheora
         run: |
           cd dependencies/windows/libtheora/win32/VS2010
-          msbuild libtheora_static.sln /p:Configuration=Release /p:PlatformToolset=v143 /p:WindowsTargetPlatformVersion=10.0
+          msbuild libtheora_static.sln /p:Configuration=Release /p:PlatformToolset=v143 /p:WindowsTargetPlatformVersion=10.0 /p:AdditionalLibraryDirectories="..\..\..\libogg\win32\VS2010\Release;..\..\..\libvorbis\win32\VS2010\Release" /p:AdditionalDependencies="libogg_static.lib;libvorbis_static.lib"
         shell: pwsh
 
       - name: Download SDL.zip from Google Drive
