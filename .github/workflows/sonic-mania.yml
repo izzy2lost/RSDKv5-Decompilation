@@ -49,12 +49,12 @@ jobs:
         run: |
           cd dependencies/windows/libvorbis/win32/VS2010
           msbuild libvorbis/libvorbis_static.vcxproj /p:Configuration=Release /p:PlatformToolset=v143 /p:WindowsTargetPlatformVersion=10.0
-        shell: pwsh      
+        shell: pwsh
 
       - name: Build libtheora
         run: |
           cd dependencies/windows/libtheora/win32/VS2010
-          msbuild libtheora/libtheora_static.vcxproj /p:Configuration=Release /p:PlatformToolset=v143 /p:WindowsTargetPlatformVersion=10.0 /p:AdditionalLibraryDirectories="..\..\..\libogg\win32\VS2010\Release;..\..\..\libvorbis\win32\VS2010\Release" /p:AdditionalDependencies="libogg_static.lib;libvorbis_static.lib"
+          msbuild libtheora_static.sln /p:Configuration=Release /p:PlatformToolset=v143 /p:WindowsTargetPlatformVersion=10.0
         shell: pwsh
 
       - name: Download SDL.zip from Google Drive
@@ -90,7 +90,6 @@ jobs:
         id: set_package_name
         run: |
           echo "PACKAGE_NAME=${{ github.event.inputs.package_name }}_${{ github.event.inputs.tag_name }}" >> $GITHUB_ENV
-
       - name: App Build
         run: |
           msbuild $env:SolutionPath -target:RSDKv5-UWP `
