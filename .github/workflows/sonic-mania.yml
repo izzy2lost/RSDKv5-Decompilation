@@ -123,6 +123,6 @@ jobs:
             /p:ForceImportBeforeCppTargets="$env:GITHUB_WORKSPACE/props/winactions_x64.props" `
             /p:RestorePackagesConfig=true `
             /p:AdditionalLibraryDirectories="dependencies/windows/SDL2/SDL2/lib" `
-            /p:AdditionalDependencies="SDL2.lib;SDL2main.lib"`
+            /p:AdditionalDependencies="SDL2.lib;SDL2main.lib" `
             /restore
         shell: pwsh
