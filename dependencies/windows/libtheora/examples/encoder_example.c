@@ -53,7 +53,6 @@
 #include <fcntl.h>
 #include <io.h>
 
-#ifdef _MSC_VER
 static double rint(double x)
 {
   if (x < 0.0)
@@ -61,8 +60,6 @@ static double rint(double x)
   else
     return (double)(int)(x + 0.5);
 }
-#else
-extern double rint(double _x);
 #endif
 
 #if defined(OC_COLLECT_METRICS)
