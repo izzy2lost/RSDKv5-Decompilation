@@ -122,7 +122,8 @@ jobs:
          /p:AppxPackageTestDir="${{ env.PackageOutputRootDir }}\${{ env.PACKAGE_NAME }}" `
          /p:ForceImportBeforeCppTargets="$env:GITHUB_WORKSPACE/props/winactions_x64.props" `
          /p:RestorePackagesConfig=true `
-         /p:AdditionalLibraryDirectories="dependencies/windows/SDL2/SDL2/lib/x64;dependencies/windows/libogg-uwp/winrt/libogg-uwp/Release;dependencies/windows/libvorbis-uwp/winrt/libvorbis-uwp/Release;dependencies/windows/libtheora-uwp/winrt/libtheora-uwp/Release" `
+         /p:AdditionalLibraryDirectories="\"dependencies/windows/SDL2/SDL2/lib/x64;dependencies/windows/libogg-uwp/winrt/libogg-uwp/Release;dependencies/windows/libvorbis-uwp/winrt/libvorbis-uwp/Release;dependencies/windows/libtheora-uwp/winrt/libtheora-uwp/Release\"" `
          /p:AdditionalDependencies="SDL2.lib;SDL2main.lib;libogg.lib;libvorbis.lib;libtheora.lib" `
          /restore
         shell: pwsh
+      
