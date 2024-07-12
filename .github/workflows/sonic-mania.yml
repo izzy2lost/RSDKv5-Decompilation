@@ -41,22 +41,6 @@ jobs:
       - name: Install wget
         run: choco install -y wget
 
-      - name: Install vcpkg
-        run: |
-          git clone https://github.com/microsoft/vcpkg.git
-          .\vcpkg\bootstrap-vcpkg.bat
-          
-      - name: Install Dependencies using vcpkg
-        run: |
-          .\vcpkg\vcpkg.exe install libogg sdl2 --triplet=x64-windows-static
-          
-      - name: Configure vcpkg integration
-        run: |
-          .\vcpkg\vcpkg integrate install
-          echo "VCPKG_ROOT=$env:GITHUB_WORKSPACE\\vcpkg" >> $env:GITHUB_ENV
-          echo "VCPKG_DEFAULT_TRIPLET=x64-windows-static" >> $env:GITHUB_ENV
-          echo "VCPKG_PATH=$env:GITHUB_WORKSPACE\\vcpkg\\installed\\x64-windows-static" >> $env:GITHUB_ENV
-
       - name: Download SDL.zip from Google Drive
         run: |
           wget -O SDL.zip "https://drive.google.com/uc?export=download&id=1VhIYeCKl3o_gFCn-HwMOXTKBgh8ARLTo"
