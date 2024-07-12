@@ -14,9 +14,6 @@ jobs:
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v1
 
-      - name: Install wget
-        run: choco install -y wget
-
       - name: Clone libogg-uwp repository
         run: |
           git clone https://github.com/ahrnbom/libogg-uwp.git dependencies/windows/libogg-uwp
@@ -68,9 +65,9 @@ jobs:
       - name: Zip the built libraries
         run: |
           New-Item -ItemType Directory -Path build_artifacts
-          Compress-Archive -Path dependencies/windows/libogg-uwp/winrt/libogg-uwp/Release/* -DestinationPath build_artifacts/libogg-uwp.zip
-          Compress-Archive -Path dependencies/windows/libvorbis-uwp/winrt/libvorbis-uwp/Release/* -DestinationPath build_artifacts/libvorbis-uwp.zip
-          Compress-Archive -Path dependencies/windows/libtheora-uwp/winrt/libtheora-uwp/Release/* -DestinationPath build_artifacts/libtheora-uwp.zip
+          Compress-Archive -Path dependencies/windows/libogg-uwp/winrt/libogg-uwp/Release -DestinationPath build_artifacts/libogg-uwp.zip
+          Compress-Archive -Path dependencies/windows/libvorbis-uwp/winrt/libvorbis-uwp/Release -DestinationPath build_artifacts/libvorbis-uwp.zip
+          Compress-Archive -Path dependencies/windows/libtheora-uwp/winrt/libtheora-uwp/Release -DestinationPath build_artifacts/libtheora-uwp.zip
         shell: pwsh
 
       - name: Upload build artifacts
