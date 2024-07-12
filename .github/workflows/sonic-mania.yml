@@ -51,6 +51,12 @@ jobs:
           msbuild libvorbis/libvorbis_static.vcxproj /p:Configuration=Release /p:PlatformToolset=v143 /p:WindowsTargetPlatformVersion=10.0
         shell: pwsh
 
+      - name: Apply patch to libtheora
+        run: |
+         cd dependencies/windows/libtheora
+         git apply ../../../libtheora_rint_fix.patch
+        shell: pwsh
+
       - name: Build libtheora
         run: |
           cd dependencies/windows/libtheora/win32/VS2010
