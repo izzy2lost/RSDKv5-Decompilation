@@ -1,0 +1,14 @@
+diff --git a/examples/encoder_example.c b/examples/encoder_example.c
+index d6f5c58..e5d66ff 100644
+--- a/examples/encoder_example.c
++++ b/examples/encoder_example.c
+@@ -53,7 +53,9 @@
+ #include <string.h>
+ #include <ctype.h>
+ 
++#ifndef _MSC_VER
+ extern double rint(double _x);
++#endif
+ 
+ #define OC_THEORA 0
+ #define OC_VP3    1
