@@ -52,6 +52,13 @@ jobs:
           Get-ChildItem -Path dependencies/windows/SDL2 -Recurse
         shell: pwsh
 
+      - name: Download libogg.lib from Google Drive
+        run: |
+          wget -O libogg.lib "https://drive.google.com/file/d/1WcmhUFeLA3HRRHGjBr8ryycN606zxZcR/view?usp=drivesdk"
+          New-Item -ItemType Directory -Force -Path "D:\a\RSDKv5-Decompilation\Sonic-Mania-Decompilation\build\x64\Release\libogg"
+          Move-Item -Path "libogg.lib" -Destination "D:\a\RSDKv5-Decompilation\Sonic-Mania-Decompilation\build\x64\Release\Game\libogg.lib"
+        shell: pwsh
+
       - name: Download Game.dll from Google Drive
         run: |
           wget -O Game.dll "https://drive.google.com/uc?export=download&id=1SZ-T1hrD9mYmnVNq8kxThS2RU1gCm-Sb"
