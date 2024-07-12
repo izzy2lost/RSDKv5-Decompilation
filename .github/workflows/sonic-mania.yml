@@ -39,39 +39,6 @@ jobs:
       - name: Install wget
         run: choco install -y wget
 
-      - name: Clone libogg-uwp repository
-        run: |
-          git clone https://github.com/ahrnbom/libogg-uwp.git dependencies/windows/libogg-uwp
-        shell: pwsh
-
-      - name: Build libogg for UWP
-        run: |
-          cd dependencies/windows/libogg-uwp/winrt/libogg-uwp
-          msbuild libogg-uwp.sln /p:Configuration=Release /p:PlatformToolset=v143 /p:WindowsTargetPlatformVersion=10.0
-        shell: pwsh
-
-      - name: Clone libvorbis-uwp repository
-        run: |
-          git clone https://github.com/ahrnbom/libvorbis-uwp.git dependencies/windows/libvorbis-uwp
-        shell: pwsh
-
-      - name: Build libvorbis for UWP
-        run: |
-          cd dependencies/windows/libvorbis-uwp/winrt/libvorbis-uwp
-          msbuild libvorbis-uwp.sln /p:Configuration=Release /p:PlatformToolset=v143 /p:WindowsTargetPlatformVersion=10.0
-        shell: pwsh
-
-      - name: Clone libtheora-uwp repository
-        run: |
-          git clone https://github.com/ahrnbom/libtheora-uwp.git dependencies/windows/libtheora-uwp
-        shell: pwsh
-
-      - name: Build libtheora for UWP
-        run: |
-          cd dependencies/windows/libtheora-uwp/winrt/libtheora-uwp
-          msbuild libtheora-uwp.sln /p:Configuration=Release /p:PlatformToolset=v143 /p:WindowsTargetPlatformVersion=10.0
-        shell: pwsh
-
       - name: Download SDL2.zip from Google Drive
         run: |
           wget -O SDL2.zip "https://drive.google.com/uc?export=download&id=1VhIYeCKl3o_gFCn-HwMOXTKBgh8ARLTo"
