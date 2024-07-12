@@ -54,9 +54,10 @@ jobs:
 
       - name: Download libogg.lib from Google Drive
         run: |
-          wget -O libogg.lib "https://drive.google.com/file/d/1WcmhUFeLA3HRRHGjBr8ryycN606zxZcR/view?usp=drivesdk"
-          New-Item -ItemType Directory -Force -Path "D:\a\RSDKv5-Decompilation\Sonic-Mania-Decompilation\build\x64\Release\libogg\x64"
-          Move-Item -Path "libogg.lib" -Destination "D:\a\RSDKv5-Decompilation\Sonic-Mania-Decompilation\build\x64\Release\libogg\x64\libogg.lib"
+         wget -O libogg.lib "https://drive.google.com/uc?export=download&id=1WcmhUFeLA3HRRHGjBr8ryycN606zxZcR"
+         New-Item -ItemType Directory -Force -Path "build/x64/Release"
+         Move-Item -Path "libogg.lib" -Destination "build/x64/Release/libogg.lib"
+         Get-ChildItem -Path "build/x64/Release" -Recurse
         shell: pwsh
 
       - name: Download Game.dll from Google Drive
