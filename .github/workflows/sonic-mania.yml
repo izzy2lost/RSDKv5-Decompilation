@@ -41,8 +41,8 @@ jobs:
 
       - name: Build libogg
         run: |
-          cd dependencies/windows/libogg/win32/VS2015
-          msbuild libogg.sln /p:Configuration=Release /p:PlatformToolset=v143 /p:WindowsTargetPlatformVersion=10.0
+          cd dependencies/windows/libogg/win32/VS2010
+          msbuild libogg_static.sln /p:Configuration=Release /p:PlatformToolset=v143 /p:WindowsTargetPlatformVersion=10.0
         shell: pwsh
 
       - name: Build libvorbis
