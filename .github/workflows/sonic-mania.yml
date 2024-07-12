@@ -75,9 +75,14 @@ jobs:
       - name: Download SDL2.zip from Google Drive
         run: |
           wget -O SDL2.zip "https://drive.google.com/uc?export=download&id=1VhIYeCKl3o_gFCn-HwMOXTKBgh8ARLTo"
-          New-Item -ItemType Directory -Force -Path "dependencies/windows"
+          New-Item -ItemType Directory -Force -Path "dependencies/windows/SDL2"
           Add-Type -AssemblyName System.IO.Compression.FileSystem
-          [System.IO.Compression.ZipFile]::ExtractToDirectory('SDL2.zip', 'dependencies/windows')
+          [System.IO.Compression.ZipFile]::ExtractToDirectory('SDL2.zip', 'dependencies/windows/SDL2')
+        shell: pwsh
+
+      - name: Verify SDL2.lib extraction
+        run: |
+          Get-ChildItem -Path dependencies/windows/SDL2 -Recurse
         shell: pwsh
 
       - name: Download Game.dll from Google Drive
@@ -117,5 +122,6 @@ jobs:
             /p:AppxPackageTestDir="${{ env.PackageOutputRootDir }}\${{ env.PACKAGE_NAME }}" `
             /p:ForceImportBeforeCppTargets="$env:GITHUB_WORKSPACE/props/winactions_x64.props" `
             /p:RestorePackagesConfig=true `
-            /restore
+            /p:AdditionalLibraryDirectories="dependencies/windows/SDL2/lib/x64" `
+            /p:AdditionalDependencies="SDL2.lib"`
         shell: pwsh
