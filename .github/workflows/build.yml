@@ -65,9 +65,12 @@ jobs:
       - name: Zip the built libraries
         run: |
           New-Item -ItemType Directory -Path build_artifacts
-          Compress-Archive -Path dependencies/windows/libogg-uwp/winrt/libogg-uwp -DestinationPath build_artifacts/libogg-uwp.zip
-          Compress-Archive -Path dependencies/windows/libvorbis-uwp/winrt/libvorbis-uwp -DestinationPath build_artifacts/libvorbis-uwp.zip
-          Compress-Archive -Path dependencies/windows/libtheora-uwp/winrt/libtheora-uwp -DestinationPath build_artifacts/libtheora-uwp.zip
+          Compress-Archive -Path dependencies/windows/libogg-uwp/winrt/libogg-uwp/Release -DestinationPath build_artifacts/libogg-uwp.zip
+          Compress-Archive -Path dependencies/windows/libogg-uwp/include -DestinationPath build_artifacts/libogg-uwp.zip
+          Compress-Archive -Path dependencies/windows/libvorbis-uwp/winrt/libvorbis-uwp/Release -DestinationPath build_artifacts/libvorbis-uwp.zip
+          Compress-Archive -Path dependencies/windows/libvorbis-uwp/include -DestinationPath build_artifacts/libvorbis-uwp.zip
+          Compress-Archive -Path dependencies/windows/libtheora-uwp/winrt/libtheora-uwp/Release -DestinationPath build_artifacts/libtheora-uwp.zip
+          Compress-Archive -Path dependencies/windows/libtheora-uwp/include -DestinationPath build_artifacts/libtheora-uwp.zip
         shell: pwsh
 
       - name: Upload build artifacts
