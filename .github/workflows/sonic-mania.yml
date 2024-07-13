@@ -78,14 +78,7 @@ jobs:
           wget -O Game.dll "https://drive.google.com/uc?export=download&id=1SZ-T1hrD9mYmnVNq8kxThS2RU1gCm-Sb"
           New-Item -ItemType Directory -Force -Path "D:\a\RSDKv5-Decompilation\Sonic-Mania-Decompilation\build\x64\Release\Game"
           Move-Item -Path "Game.dll" -Destination "D:\a\RSDKv5-Decompilation\Sonic-Mania-Decompilation\build\x64\Release\Game\Game.dll"
-        shell: pwsh
-
-      - name: Download ManiaTouchControls.dll from Google Drive
-        run: |
-          wget -O ManiaTouchControls.dll "https://drive.google.com/uc?export=download&id=1Sh-qQXAoYwEMKotbjSMRv7JmPuDVHIgp"
-          New-Item -ItemType Directory -Force -Path "D:\a\RSDKv5-Decompilation\RSDKv5-Example-Mods\ManiaTouchControls\build\x64\Release"
-          Move-Item -Path "ManiaTouchControls.dll" -Destination "D:\a\RSDKv5-Decompilation\RSDKv5-Example-Mods\ManiaTouchControls\build\x64\Release\ManiaTouchControls.dll"
-        shell: pwsh
+        shell: pwsh      
 
       - name: Generate Self-Signed Certificate
         id: generate_cert
