@@ -345,10 +345,11 @@
       <DestinationFolders>$(OutDir)\Mods\D3D11Shaders\</DestinationFolders>
     </CopyFileToFolders>
     <CopyFileToFolders Include="mods\modconfig.ini">
-      <FileType>Document</FileType>
-      <DeploymentContent>true</DeploymentContent>
-      <DestinationFolders>$(OutDir)\Mods</DestinationFolders>    
-    <None Include="packages.config" />
+  <FileType>Document</FileType>
+  <DeploymentContent>true</DeploymentContent>
+  <DestinationFolders>$(OutDir)\Mods</DestinationFolders>
+</CopyFileToFolders>
+<None Include="packages.config" />
     <None Include="PropertySheet.props" />
     <None Include="RSDKv5.UWP_TemporaryKey.pfx" />
     <Text Include="readme.txt">
