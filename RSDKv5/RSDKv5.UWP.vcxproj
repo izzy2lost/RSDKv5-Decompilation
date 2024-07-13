@@ -237,12 +237,6 @@
     <Image Include="Assets\StoreLogo.scale-125.png" />
     <Image Include="Assets\StoreLogo.scale-150.png" />
     <Image Include="Assets\StoreLogo.scale-200.png" />
-    <CopyFileToFolders Include="mods\ManiaTouchControls\Data\Sprites\Global\TouchControls.gif">
-      <DestinationFolders>$(OutDir)\Mods\ManiaTouchControls\Data\Sprites\Global</DestinationFolders>
-    </CopyFileToFolders>
-    <CopyFileToFolders Include="mods\ManiaTouchControls\Data\Sprites\Global\TouchControls.bin">
-      <DestinationFolders>$(OutDir)\Mods\ManiaTouchControls\Data\Sprites\Global</DestinationFolders>
-    </CopyFileToFolders>
     <Image Include="Assets\WideTile.scale-100.png" />
     <Image Include="Assets\WideTile.scale-125.png" />
     <Image Include="Assets\WideTile.scale-150.png" />
@@ -353,33 +347,7 @@
     <CopyFileToFolders Include="mods\modconfig.ini">
       <FileType>Document</FileType>
       <DeploymentContent>true</DeploymentContent>
-      <DestinationFolders>$(OutDir)\Mods</DestinationFolders>
-    </CopyFileToFolders>
-    <CopyFileToFolders Include="mods\ManiaTouchControls\mod.ini">
-      <FileType>Document</FileType>
-      <DeploymentContent>true</DeploymentContent>
-      <DestinationFolders>$(OutDir)\Mods\ManiaTouchControls</DestinationFolders>
-    </CopyFileToFolders>
-    <CopyFileToFolders Include="..\..\RSDKv5-Example-Mods\ManiaTouchControls\build\Win32\Release\ManiaTouchControls.dll" Condition="'$(Platform)'=='Win32'">
-      <FileType>Document</FileType>
-      <DeploymentContent>true</DeploymentContent>
-      <DestinationFolders>$(OutDir)Mods\ManiaTouchControls</DestinationFolders>
-    </CopyFileToFolders>
-    <CopyFileToFolders Include="..\..\RSDKv5-Example-Mods\ManiaTouchControls\build\x64\Release\ManiaTouchControls.dll" Condition="'$(Platform)'=='x64'">
-      <FileType>Document</FileType>
-      <DeploymentContent>true</DeploymentContent>
-      <DestinationFolders>$(OutDir)Mods\ManiaTouchControls</DestinationFolders>
-    </CopyFileToFolders>
-    <CopyFileToFolders Include="..\..\RSDKv5-Example-Mods\ManiaTouchControls\build\ARM\Release\ManiaTouchControls.dll" Condition="'$(Platform)'=='ARM'">
-      <FileType>Document</FileType>
-      <DeploymentContent>true</DeploymentContent>
-      <DestinationFolders>$(OutDir)Mods\ManiaTouchControls</DestinationFolders>
-    </CopyFileToFolders>
-    <CopyFileToFolders Include="..\..\RSDKv5-Example-Mods\ManiaTouchControls\build\ARM64\Release\ManiaTouchControls.dll" Condition="'$(Platform)'=='ARM64'">
-      <FileType>Document</FileType>
-      <DeploymentContent>true</DeploymentContent>
-      <DestinationFolders>$(OutDir)Mods\ManiaTouchControls</DestinationFolders>
-    </CopyFileToFolders>
+      <DestinationFolders>$(OutDir)\Mods</DestinationFolders>    
     <None Include="packages.config" />
     <None Include="PropertySheet.props" />
     <None Include="RSDKv5.UWP_TemporaryKey.pfx" />
