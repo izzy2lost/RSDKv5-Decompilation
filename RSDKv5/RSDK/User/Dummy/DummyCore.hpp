@@ -1,5 +1,4 @@
 #if RETRO_REV02
-#define RSDK_AUTOBUILD
 
 // This is the "dummy" struct, it serves as the base in the event a suitable API isn't loaded (such as in this decomp)
 // This struct should never be removed, other structs such as "SteamUserCore" would be added and "userCore" would be set to that instead
