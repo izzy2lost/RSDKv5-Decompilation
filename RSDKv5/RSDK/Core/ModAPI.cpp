@@ -235,16 +235,27 @@ void RSDK::LoadModSettings()
     modSettings.versionOverride = 0;
     modSettings.forceScripts    = false;
 #endif
+    if (modList.empty())
+        return;
 
-    int32 activeModCount = (int32)ActiveMods().size();
-    for (int32 i = activeModCount - 1; i >= 0; --i) {
+    // Iterate backwards to find the last active mod in the list
+    int32 start = modList.size() - 1;
+    while ((start != -1) && !modList[start].active) {
+        --start;
+    }
+
+    // No active mod in the list
+    if (start == -1)
+        return;
+
+    for (int32 i = start; i >= 0; --i) {
         ModInfo *mod = &modList[i];
 
         if (mod->redirectSaveRAM) {
             if (SKU::userFileDir[0])
-                sprintf(customUserFileDir, "%smods/%s/", SKU::userFileDir, mod->id.c_str());
+                sprintf(customUserFileDir, "%smods/%s/", SKU::userFileDir, mod->folderName.c_str());
             else
-                sprintf(customUserFileDir, "mods/%s/", mod->id.c_str());
+                sprintf(customUserFileDir, "mods/%s/", mod->folderName.c_str());
         }
 
         modSettings.redirectSaveRAM |= mod->redirectSaveRAM ? 1 : 0;
