@@ -4,9 +4,7 @@
 #if RETRO_USE_MOD_LOADER
 #include <vector>
 #include <string>
-#include <sstream>
 #include <map>
-#include <regex>
 #include "tinyxml2.h"
 
 #include <functional>
@@ -18,6 +16,8 @@ namespace RSDK
 #if RETRO_USE_MOD_LOADER
 
 #define LEGACY_PLAYERNAME_COUNT (0x10)
+
+extern HINSTANCE hCurrentInstance;
 
 extern std::map<uint32, uint32> superLevels;
 extern int32 inheritLevel;
@@ -146,8 +146,9 @@ enum ModFunctionTableIDs {
 typedef void (*ModCallback)(void *data);
 typedef std::function<void(void *data)> ModCallbackSTD;
 
-typedef bool (*modLink)(EngineInfo *, const char *);
-typedef std::function<bool(EngineInfo *, const char *)> modLinkSTD;
+typedef void (*modUnload)();
+typedef bool (*modLink)(GameInfo *, const char *);
+typedef std::function<bool(GameInfo *, const char *)> modLinkSTD;
 
 struct ModPublicFunctionInfo {
     std::string name;
@@ -179,7 +180,6 @@ struct ModInfo {
     std::string desc;
     std::string author;
     std::string version;
-    std::string folderName;
     bool active;
     bool redirectSaveRAM;
     bool disableGameLogic;
@@ -191,7 +191,7 @@ struct ModInfo {
     std::vector<ModPublicFunctionInfo> functionList;
     std::vector<Link::Handle> modLogicHandles;
     std::vector<modLinkSTD> linkModLogic;
-    void (*unloadMod)();
+    modUnload unloadMod;
     std::map<std::string, std::map<std::string, std::string>> settings;
     std::map<std::string, std::map<std::string, std::string>> config;
 
@@ -219,6 +219,12 @@ struct ModSettings {
 #endif
 };
 
+struct StaticModFunctions {
+    const ModVersionInfo *modInfo;
+    const modLink modLink;
+    const modUnload unloadMod;
+};
+
 extern ModSettings modSettings;
 extern std::vector<ModInfo> modList;
 extern std::vector<ModCallbackSTD> modCallbackList[MODCB_MAX];
@@ -244,14 +250,24 @@ void SortMods();
 void LoadModSettings();
 void ApplyModChanges();
 
-bool32 ScanModFolder(ModInfo *info, const char *targetFile = nullptr, bool32 fromLoadMod = false, bool32 loadingBar = true);
-inline void RefreshModFolders(bool32 versionOnly = false, bool32 loadingBar = true)
+inline std::vector<ModInfo *> ActiveMods()
 {
     SortMods();
+    std::vector<ModInfo *> ret;
     for (int32 m = 0; m < modList.size(); ++m) {
         if (!modList[m].active)
             break;
-        ScanModFolder(&modList[m], versionOnly ? "Data/Game/GameConfig.bin" : nullptr, true, loadingBar);
+        ret.push_back(&modList.at(m));
+    }
+    return ret;
+}
+
+bool32 ScanModFolder(ModInfo *info, const char *targetFile = nullptr, bool32 fromLoadMod = false);
+inline void RefreshModFolders(bool32 versionOnly = false)
+{
+    int32 activeModCount = (int32)ActiveMods().size();
+    for (int32 m = 0; m < activeModCount; ++m) {
+        ScanModFolder(&modList[m], versionOnly ? "Data/Game/GameConfig.bin" : nullptr, true);
     }
 }
 
@@ -509,7 +525,7 @@ class recursive_directory_iterator
     directory_entry current;
 
     jstring jstr;
-    const char *str = nullptr;
+    const char* str = nullptr;
 
     jbyteArray jpath;
 
@@ -519,12 +535,12 @@ public:
     using difference_type   = ptrdiff_t;
     using pointer           = const directory_entry *;
     using reference         = const directory_entry &;
-
+    
     recursive_directory_iterator() = default;
     recursive_directory_iterator(path path, directory_options _)
     {
         (void)_;
-        jni   = GetJNISetup();
+        jni = GetJNISetup();
         jpath = jni->env->NewByteArray(path.string().length());
         jni->env->SetByteArrayRegion(jpath, 0, path.string().length(), (jbyte *)path.string().c_str());
         operator++();
@@ -532,14 +548,21 @@ public:
 
     // this class is modified from the MSVC headers LMAO
 
-    bool operator==(const recursive_directory_iterator &rhs) const noexcept { return jni == rhs.jni; }
-    bool operator!=(const recursive_directory_iterator &rhs) const noexcept { return jni != rhs.jni; }
-    const directory_entry &operator*() const noexcept { return current; }
+    bool operator==(const recursive_directory_iterator& rhs) const noexcept {
+        return jni == rhs.jni;
+    }
+    bool operator!=(const recursive_directory_iterator& rhs) const noexcept {
+        return jni != rhs.jni;
+    }
+    const directory_entry& operator*() const noexcept {
+        return current;
+    }
 
-    const directory_entry *operator->() const noexcept { return &**this; }
+    const directory_entry* operator->() const noexcept {
+        return &**this;
+    }
 
-    recursive_directory_iterator &operator++()
-    {
+    recursive_directory_iterator& operator++() {
         if (str) {
             jni->env->ReleaseStringUTFChars(jstr, str);
         }
@@ -548,15 +571,20 @@ public:
             *this = {};
         }
         else {
-            str     = jni->env->GetStringUTFChars(jstr, NULL);
+            str = jni->env->GetStringUTFChars(jstr, NULL);
             current = directory_entry(fs::path(str));
         }
         return *this;
     }
 
-    inline recursive_directory_iterator begin() noexcept { return *this; }
+    inline recursive_directory_iterator begin() noexcept {
+        return *this;
+    }
 
-    inline recursive_directory_iterator end() noexcept { return {}; }
+    inline recursive_directory_iterator end() noexcept {
+        return {};
+    }
+
 };
 
 }; // namespace fs
