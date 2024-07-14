@@ -536,7 +536,7 @@ void RSDK::LoadMods(bool newOnly, bool32 getVersion)
                 modList.push_back(info);
             }
             delete[] keys;
-            iniparser_freedict(ini)            
+            iniparser_freedict(ini);          
         }
 
         try {
