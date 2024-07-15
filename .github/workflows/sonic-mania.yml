@@ -22,7 +22,7 @@ jobs:
       Configuration: Release
       BuildMode: SideLoadOnly
       AppxBundle: Never
-      ProjectPath: RSDKv5\RSDKv5_dx11.vcxproj
+      ProjectPath: RSDKv5\RSDKv5_ogl.vcxproj
       ProjectDirectory: .\RSDKv5
       PackageOutputRootDir: C:\AppPackage
       PackageOutputDir: RSDKv5
@@ -93,7 +93,7 @@ jobs:
           echo "PACKAGE_NAME=${{ github.event.inputs.package_name }}_${{ github.event.inputs.tag_name }}" >> $GITHUB_ENV
       - name: App Build
         run: |
-          msbuild $env:SolutionPath -target:RSDKv5-dx11 `
+          msbuild $env:SolutionPath -target: RSDKv5-ogl `
             /p:Platform=$env:Platform `
             /p:Configuration=$env:Configuration `
             /p:UapAppxPackageBuildMode=$env:BuildMode `
