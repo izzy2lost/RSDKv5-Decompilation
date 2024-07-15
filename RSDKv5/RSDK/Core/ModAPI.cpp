@@ -235,7 +235,8 @@ void RSDK::LoadModSettings()
     modSettings.versionOverride = 0;
     modSettings.forceScripts    = customSettings.forceScripts;
 #endif
-
+    
+    int32 activeModCount = (int32)ActiveMods().size();
         if (modList.empty())
         return;
 
