@@ -94,7 +94,7 @@ jobs:
 
       - name: App Build
         run: |
-          msbuild $env:SolutionPath -target: RSDKv5-UWP `
+          msbuild $env:SolutionPath -target:RSDKv5-UWP `
             /p:Platform=$env:Platform `
             /p:Configuration=$env:Configuration `
             /p:UapAppxPackageBuildMode=$env:BuildMode `
