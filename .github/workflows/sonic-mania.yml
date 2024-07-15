@@ -93,7 +93,7 @@ jobs:
           echo "PACKAGE_NAME=${{ github.event.inputs.package_name }}_${{ github.event.inputs.tag_name }}" >> $GITHUB_ENV
       - name: App Build
         run: |
-          msbuild $env:SolutionPath -target:RSDKv5-dx11 `
+          msbuild $env:SolutionPath -target:RSDKv5-UWP `
             /p:Platform=$env:Platform `
             /p:Configuration=$env:Configuration `
             /p:UapAppxPackageBuildMode=$env:BuildMode `
