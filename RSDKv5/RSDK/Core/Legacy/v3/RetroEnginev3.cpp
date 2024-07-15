@@ -55,6 +55,9 @@ bool32 RSDK::Legacy::v3::LoadGameConfig(const char *filepath)
             SetSfxName(strBuffer, s, true);
 #endif
         }
+#if RETRO_USE_MOD_LOADER
+        RSDK::Legacy::v3::LoadXMLSoundFX();
+#endif
 
         // Read Player Names
         uint8 plrCount = ReadInt8(&info);
