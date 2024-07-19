@@ -1,0 +1,58 @@
+name: iOS App CI
+
+on:
+  push:
+    branches:
+      - ios
+  pull_request:
+    branches:
+      - ios
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: 3.0
+
+    - name: Install dependencies
+      run: |
+        gem install bundler
+        bundle install
+        brew install cocoapods
+        pod install --repo-update
+
+    - name: Build the app
+      run: xcodebuild -workspace RSDKv5.xcodeproj/project.xcworkspace -scheme RSDKv5 -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 12' clean build
+
+    - name: Run tests
+      run: xcodebuild test -workspace RSDKv5.xcodeproj/project.xcworkspace -scheme RSDKv5 -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 12'
+      
+    - name: Set up signing
+      run: |
+        mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+        echo "$PROFILE" > ~/Library/MobileDevice/Provisioning\ Profiles/$PROFILE_UUID.mobileprovision
+      env:
+        PROFILE: ${{ secrets.APPLE_PROVISIONING_PROFILE }}
+        PROFILE_UUID: ${{ secrets.APPLE_PROVISIONING_PROFILE_UUID }}
+    
+    - name: Decode certificate
+      run: |
+        echo $CERTIFICATE | base64 --decode > certificate.p12
+      env:
+        CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+    
+    - name: Install certificate
+      run: |
+        security create-keychain -p actions ios-build.keychain
+        security import certificate.p12 -t agg -k ~/Library/Keychains/ios-build.keychain -P ${{ secrets.CERTIFICATE_PASSWORD }} -A
+        security list-keychains -s ios-build.keychain
+        security default-keychain -s ios-build.keychain
+        security unlock-keychain -p actions ios-build.keychain
+        security set-key-partition-list -S apple-tool:,apple: -s -k actions ios-build.keychain
