@@ -11,11 +11,16 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
       with:
-        submodules: recursive
-        
+        submodules: recursive  # Checkout submodules recursively
+
     - name: Install dependencies
       run: |
-        brew install ldid
+        brew install cocoapods ldid
+        pod install --repo-update
+
+    - name: Update deployment target
+      run: |
+        find . -name "*.xcodeproj" -print -exec /usr/libexec/PlistBuddy -c "Set :\"Build settings\":\"IPHONEOS_DEPLOYMENT_TARGET\" 12.0" {}/project.pbxproj \;
 
     - name: Build the app for simulator
       run: |
@@ -48,8 +53,8 @@ jobs:
                    CODE_SIGNING_REQUIRED=NO \
                    CODE_SIGNING_ALLOWED=NO \
                    AD_HOC_CODE_SIGNING_ALLOWED=YES \
-                   DEVELOPMENT_TEAM=IZZYIZZYIZ \
-                   ORG_IDENTIFIER=com.SonicMania \
+                   DEVELOPMENT_TEAM=XYZ0123456 \
+                   ORG_IDENTIFIER=com.SideStore \
                    DWARF_DSYM_FOLDER_PATH="."
 
     - name: Fakesign app
