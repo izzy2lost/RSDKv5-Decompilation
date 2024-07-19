@@ -1,7 +1,7 @@
 name: iOS App CI
 
 on:
- workflow_dispatch:
+  workflow_dispatch:
 
 jobs:
   build:
@@ -29,25 +29,20 @@ jobs:
     - name: Run tests
       run: xcodebuild test -workspace RSDKv5.xcodeproj/project.xcworkspace -scheme RSDKv5 -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 12'
       
-    - name: Set up signing
-      run: |
-        mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-        echo "$PROFILE" > ~/Library/MobileDevice/Provisioning\ Profiles/$PROFILE_UUID.mobileprovision
-      env:
-        PROFILE: ${{ secrets.APPLE_PROVISIONING_PROFILE }}
-        PROFILE_UUID: ${{ secrets.APPLE_PROVISIONING_PROFILE_UUID }}
+    - name: Build for device
+      run: xcodebuild -workspace RSDKv5.xcodeproj/project.xcworkspace -scheme RSDKv5 -sdk iphoneos -configuration Release clean build
+
+    - name: Fakesign app
+      run: ldid -S /path/to/RSDKv5.app/RSDKv5
     
-    - name: Decode certificate
+    - name: Convert to IPA
       run: |
-        echo $CERTIFICATE | base64 --decode > certificate.p12
-      env:
-        CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
-    
-    - name: Install certificate
-      run: |
-        security create-keychain -p actions ios-build.keychain
-        security import certificate.p12 -t agg -k ~/Library/Keychains/ios-build.keychain -P ${{ secrets.CERTIFICATE_PASSWORD }} -A
-        security list-keychains -s ios-build.keychain
-        security default-keychain -s ios-build.keychain
-        security unlock-keychain -p actions ios-build.keychain
-        security set-key-partition-list -S apple-tool:,apple: -s -k actions ios-build.keychain
+        mkdir -p Payload
+        cp -r /path/to/RSDKv5.app Payload/
+        zip -r RSDKv5.ipa Payload
+
+    - name: Upload IPA Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: RSDKv5.ipa
+        path: RSDKv5.ipa
