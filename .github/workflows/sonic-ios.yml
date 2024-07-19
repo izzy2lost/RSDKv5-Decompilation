@@ -12,9 +12,7 @@ jobs:
       uses: actions/checkout@v3
 
     - name: Install dependencies
-      run: |
-        brew install cocoapods ldid
-        pod install --repo-update
+      run: brew install ldid
 
     - name: Build the app for simulator
       run: xcodebuild -workspace RSDKv5.xcodeproj/project.xcworkspace -scheme RSDKv5 -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 12' clean build
