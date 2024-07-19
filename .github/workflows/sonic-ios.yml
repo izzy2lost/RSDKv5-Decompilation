@@ -15,8 +15,7 @@ jobs:
 
     - name: Install dependencies
       run: |
-        brew install cocoapods ldid
-        pod install --repo-update
+        brew install ldid
 
     - name: Update deployment target
       run: |
