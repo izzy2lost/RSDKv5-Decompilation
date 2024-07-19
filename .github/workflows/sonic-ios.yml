@@ -14,7 +14,16 @@ jobs:
           submodules: recursive
           
     - name: Install dependencies
-      run: brew install ldid
+      run: |
+        brew install cocoapods ldid
+        pod install --repo-update
+
+    - name: Disable code signing
+      run: |
+        # Disable code signing for all targets
+        /usr/libexec/PlistBuddy -c "Set :CODE_SIGNING_REQUIRED NO" RSDKv5.xcodeproj/project.pbxproj
+        /usr/libexec/PlistBuddy -c "Set :CODE_SIGN_IDENTITY ''" RSDKv5.xcodeproj/project.pbxproj
+        /usr/libexec/PlistBuddy -c "Set :PROVISIONING_PROFILE_SPECIFIER ''" RSDKv5.xcodeproj/project.pbxproj
 
     - name: Build the app for simulator
       run: xcodebuild -workspace RSDKv5.xcodeproj/project.xcworkspace -scheme RSDKv5 -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 12' clean build
