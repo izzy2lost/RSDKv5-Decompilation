@@ -10,27 +10,46 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
-      with:
-          submodules: recursive
-          
-    - name: Install dependencies
-      run: brew install ldid
 
-    - name: Disable code signing
+    - name: Install dependencies
       run: |
-        # Disable code signing for all targets
-        /usr/libexec/PlistBuddy -c "Set :CODE_SIGNING_REQUIRED NO" RSDKv5.xcodeproj/project.pbxproj
-        /usr/libexec/PlistBuddy -c "Set :CODE_SIGN_IDENTITY ''" RSDKv5.xcodeproj/project.pbxproj
-        /usr/libexec/PlistBuddy -c "Set :PROVISIONING_PROFILE_SPECIFIER ''" RSDKv5.xcodeproj/project.pbxproj
+        brew install cocoapods ldid
+        pod install --repo-update
 
     - name: Build the app for simulator
-      run: xcodebuild -workspace RSDKv5.xcodeproj/project.xcworkspace -scheme RSDKv5 -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 12' clean build
+      run: |
+        xcodebuild -workspace RSDKv5.xcodeproj/project.xcworkspace \
+                   -scheme RSDKv5 \
+                   -sdk iphonesimulator \
+                   -destination 'platform=iOS Simulator,name=iPhone 12' \
+                   clean build \
+                   CODE_SIGNING_REQUIRED=NO \
+                   CODE_SIGNING_ALLOWED=NO \
+                   AD_HOC_CODE_SIGNING_ALLOWED=YES
 
     - name: Run tests
-      run: xcodebuild test -workspace RSDKv5.xcodeproj/project.xcworkspace -scheme RSDKv5 -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 12'
-      
+      run: |
+        xcodebuild test -workspace RSDKv5.xcodeproj/project.xcworkspace \
+                   -scheme RSDKv5 \
+                   -sdk iphonesimulator \
+                   -destination 'platform=iOS Simulator,name=iPhone 12' \
+                   CODE_SIGNING_REQUIRED=NO \
+                   CODE_SIGNING_ALLOWED=NO \
+                   AD_HOC_CODE_SIGNING_ALLOWED=YES
+
     - name: Build for device
-      run: xcodebuild -workspace RSDKv5.xcodeproj/project.xcworkspace -scheme RSDKv5 -sdk iphoneos -configuration Release clean build
+      run: |
+        xcodebuild -workspace RSDKv5.xcodeproj/project.xcworkspace \
+                   -scheme RSDKv5 \
+                   -sdk iphoneos \
+                   -configuration Release \
+                   clean build \
+                   CODE_SIGNING_REQUIRED=NO \
+                   CODE_SIGNING_ALLOWED=NO \
+                   AD_HOC_CODE_SIGNING_ALLOWED=YES \
+                   DEVELOPMENT_TEAM=IZZYIZZYIZ \
+                   ORG_IDENTIFIER=com.SonicMania \
+                   DWARF_DSYM_FOLDER_PATH="."
 
     - name: Fakesign app
       run: ldid -S path/to/RSDKv5.app/RSDKv5
