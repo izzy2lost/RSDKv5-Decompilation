@@ -11,19 +11,12 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    - name: Set up Ruby
-      uses: ruby/setup-ruby@v1
-      with:
-        ruby-version: 3.0
-
     - name: Install dependencies
       run: |
-        gem install bundler
-        bundle install
-        brew install cocoapods
+        brew install cocoapods ldid
         pod install --repo-update
 
-    - name: Build the app
+    - name: Build the app for simulator
       run: xcodebuild -workspace RSDKv5.xcodeproj/project.xcworkspace -scheme RSDKv5 -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 12' clean build
 
     - name: Run tests
@@ -33,12 +26,12 @@ jobs:
       run: xcodebuild -workspace RSDKv5.xcodeproj/project.xcworkspace -scheme RSDKv5 -sdk iphoneos -configuration Release clean build
 
     - name: Fakesign app
-      run: ldid -S /path/to/RSDKv5.app/RSDKv5
+      run: ldid -S path/to/RSDKv5.app/RSDKv5
     
     - name: Convert to IPA
       run: |
         mkdir -p Payload
-        cp -r /path/to/RSDKv5.app Payload/
+        cp -r path/to/RSDKv5.app Payload/
         zip -r RSDKv5.ipa Payload
 
     - name: Upload IPA Artifact
