@@ -9,7 +9,7 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         submodules: recursive  # Checkout submodules recursively
 
@@ -73,7 +73,7 @@ jobs:
         zip -r RSDKv5.ipa Payload
 
     - name: Upload IPA Artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: RSDKv5.ipa
         path: RSDKv5.ipa
